@@ -1,0 +1,29 @@
+server.port: 7003
+logging:
+  level:
+    root: INFO
+    de.hf.myfinance: DEBUG
+
+
+springdoc:
+  swagger-ui.path: /openapi/swagger-ui.html
+  api-docs.path: /openapi/v3/api-docs
+  packagesToScan: de.hf.myfinance.mfvaluation.service
+  pathsToMatch: /**
+
+api:
+
+  common:
+    version: 1.0.0
+    title: mftransactions API
+    description: REST API for transaction informations of instruments.
+
+  responseCodes:
+    ok.description: OK
+    badRequest.description: Bad Request, invalid format of the request. See response message for more information
+    notFound.description: Not found, the specified id does not exist
+    unprocessableEntity.description: Unprocessable entity, input parameters caused the processing to fail. See response message for more information
+
+
+
+
