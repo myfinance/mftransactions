@@ -1,4 +1,4 @@
-package de.hf.myfinance.mftransaction;
+package de.hf.myfinance.transaction;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,17 +1,17 @@
-package de.hf.myfinance.mftransaction.service;
+package de.hf.myfinance.transaction.api;
 
-import de.hf.myfinance.restapi.TransactionService;
+import de.hf.myfinance.restapi.TransactionApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.hf.framework.utils.ServiceUtil;
 
 @RestController
-public class TransactionServiceImpl implements TransactionService {
+public class TransactionApiImpl implements TransactionApi {
     ServiceUtil serviceUtil;
 
     @Autowired
-    public TransactionServiceImpl(ServiceUtil serviceUtil) {
+    public TransactionApiImpl(ServiceUtil serviceUtil) {
         this.serviceUtil = serviceUtil;
     }
 
