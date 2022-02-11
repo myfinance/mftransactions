@@ -12,7 +12,7 @@ image:
 
 mftransactions:
   mf_http_port_ext: 30026
-  mf_http_port: 7001
+  mf_http_port: 7003
   mf_name: mftransactions
 
   
