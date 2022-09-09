@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "instruments")
 public class InstrumentEntity implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
@@ -23,6 +25,7 @@ public class InstrumentEntity implements java.io.Serializable {
     private String businesskey;
 
     private String tenant;
+    private List<String> childs;
 
 
     public InstrumentEntity() {
@@ -81,5 +84,12 @@ public class InstrumentEntity implements java.io.Serializable {
     }
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public List<String> getChilds() {
+        return childs;
+    }
+    public void setChilds(List<String> childs) {
+        this.childs = childs;
     }
 }

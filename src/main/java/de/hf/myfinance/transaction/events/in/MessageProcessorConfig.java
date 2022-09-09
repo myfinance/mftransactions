@@ -2,7 +2,7 @@ package de.hf.myfinance.transaction.events.in;
 
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.Instrument;
-import de.hf.myfinance.transaction.TransactionService;
+import de.hf.myfinance.transaction.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,7 @@ public class MessageProcessorConfig {
                 case CREATE:
                     Instrument instrument = event.getData();
                     LOG.info("Create instrument with ID: {}", instrument.getBusinesskey());
+                    transactionService.updateInstrument(instrument);
                     break;
 
                 default:
