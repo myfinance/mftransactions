@@ -1,39 +1,26 @@
 package de.hf.myfinance.transaction.service;
 
-
-import de.hf.myfinance.restmodel.AdditionalLists;
-import de.hf.myfinance.restmodel.Instrument;
-import de.hf.myfinance.restmodel.InstrumentType;
-import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
-import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
+import de.hf.myfinance.restmodel.Transaction;
+import de.hf.myfinance.transaction.service.handler.TransactionHandlerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 public class TransactionService {
-    private final InstrumentMapper instrumentMapper;
-    private final InstrumentRepository instrumentRepository;
+
+    private final TransactionHandlerFactory transactionHandlerFactory;
 
     @Autowired
-    public TransactionService(InstrumentMapper instrumentMapper, InstrumentRepository instrumentRepository){
-        this.instrumentMapper = instrumentMapper;
-        this.instrumentRepository = instrumentRepository;
+    public TransactionService(TransactionHandlerFactory transactionHandlerFactory){
+        this.transactionHandlerFactory = transactionHandlerFactory;
     }
 
-    public void updateInstrument(Instrument instrument) {
-        if(instrument.getInstrumentType().equals(InstrumentType.BUDGET) || instrument.getInstrumentType().equals(InstrumentType.GIRO)){
-            var instrumentEntity = map2entity(instrument);
-            instrumentRepository.deleteByBusinesskey(instrumentEntity.getBusinesskey()).then(instrumentRepository.save(instrumentEntity)).block();
 
-        }
 
+    public Mono<String> addTransaction(Transaction transaction) {
+        return transactionHandlerFactory.createTransactionHandler(transaction).validate();
     }
 
-    private InstrumentEntity map2entity(Instrument instrument) {
-        var instrumentEntity = instrumentMapper.apiToEntity(instrument);
-        if(instrument.getAdditionalLists().containsKey(AdditionalLists.CHILDS)){
-            instrumentEntity.setChilds(instrument.getAdditionalLists().get(AdditionalLists.CHILDS));
-        }
-        return instrumentEntity;
-    }
+
 }

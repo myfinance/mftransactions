@@ -11,12 +11,27 @@ springdoc:
   packagesToScan: de.hf.myfinance.mfvaluation.service
   pathsToMatch: /**
 
+spring:
+  cloud:
+    function:
+      definition: saveInstrumentProcessor;saveTransactionProcessor;validateTransactionProcessor
+
 spring.cloud.stream:
   defaultBinder: rabbit
   default.contentType: application/json
-  bindings.messageProcessor-in-0:
-    destination: instrumentupdates
-    group: instrumentupdatesGroup
+  bindings.saveInstrumentProcessor-in-0:
+    destination: instrumentApproved
+    group: instruments4transactionGroup
+  bindings.validateTransactionProcessor-in-0:
+    destination: validateTransactionRequest
+    group: validateTransactionGroup
+  bindings.saveTransactionProcessor-in-0:
+    destination: transactionApproved
+    group: saveTransactionGroup
+  bindings.transactionaAproved-out-0:
+    destination: transactionApproved
+    producer:
+      required-groups: transactionApprovedAuditGroup
 
 spring.cloud.stream.bindings.messageProcessor-in-0.consumer:
   maxAttempts: 3

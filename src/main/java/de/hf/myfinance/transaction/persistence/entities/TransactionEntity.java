@@ -1,20 +1,37 @@
 package de.hf.myfinance.transaction.persistence.entities;
 
 import de.hf.myfinance.restmodel.InstrumentType;
+import de.hf.myfinance.restmodel.Trade;
+import de.hf.myfinance.restmodel.TransactionType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-@Document(collection = "instruments")
-public class InstrumentEntity implements java.io.Serializable {
+@Document(collection = "transactions")
+public class TransactionEntity  implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    private String instrumentid;
+    private String transactionId;
     @Version
     private Integer version;
+
+    private String description;
+    private LocalDate transactiondate;
+    private LocalDateTime lastchanged;
+    private Set<Trade> trades = new HashSet<Trade>(0);
+    private Map<String, Double> cashflows = new HashMap<>(0);
+    private TransactionType transactionType;
+
+
     private InstrumentType instrumentType;
     private boolean isactive;
     @Indexed(unique = true)
@@ -23,19 +40,21 @@ public class InstrumentEntity implements java.io.Serializable {
     private String tenantBusinesskey;
 
 
-    public InstrumentEntity() {
+    public TransactionEntity(String transactionId) {
+        this.transactionId = transactionId;
     }
 
-    public InstrumentEntity(InstrumentType instrumentType, boolean isactive) {
-        setInstrumentType(instrumentType);
-        this.isactive = isactive;
+    public TransactionEntity(String description, LocalDate transactiondate, TransactionType transactionType) {
+        this.description = description;
+        this.transactiondate = transactiondate;
+        this.transactionType = transactionType;
     }
 
-    public String getInstrumentid() {
-        return this.instrumentid;
+    public String getTransactionId() {
+        return this.transactionId;
     }
-    public void setInstrumentid(String instrumentid) {
-        this.instrumentid = instrumentid;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public InstrumentType getInstrumentType(){

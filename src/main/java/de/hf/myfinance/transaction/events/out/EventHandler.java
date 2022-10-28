@@ -1,6 +1,7 @@
 package de.hf.myfinance.transaction.events.out;
 
 import de.hf.myfinance.event.Event;
+import de.hf.myfinance.restmodel.Transaction;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -17,10 +18,9 @@ public class EventHandler {
         this.streamBridge = streamBridge;
     }
 
-    public void sendInstrumentUpdatedEvent(){
-        /*var instrument = instrumentMapper.entityToApi(instrumentEntity);
-        sendMessage("instrumentupdates-out-0",
-                new Event(CREATE, instrument.getBusinesskey().hashCode(), instrument));*/
+    public void sendTransactionApprovedEvent(Transaction transaction){
+        sendMessage("transactionaAproved-out-0",
+                new Event(CREATE, transaction.getTransactionId(), transaction));
     }
 
     private void sendMessage(String bindingName, Event event) {
