@@ -3,7 +3,9 @@ package de.hf.myfinance.transaction.service;
 import de.hf.framework.audit.AuditService;
 import de.hf.myfinance.transaction.events.out.EventHandler;
 import de.hf.myfinance.transaction.persistence.DataReader;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransactionEnvironment {
     private final DataReader dataReader;
     private final AuditService auditService;
@@ -22,7 +24,6 @@ public class TransactionEnvironment {
     public AuditService getAuditService() {
         return auditService;
     }
-
     public EventHandler getEventHandler() {
         return eventHandler;
     }

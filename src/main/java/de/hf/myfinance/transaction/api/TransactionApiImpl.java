@@ -21,8 +21,9 @@ public class TransactionApiImpl implements TransactionApi {
     String apiVersion;
 
     @Autowired
-    public TransactionApiImpl(ServiceUtil serviceUtil) {
+    public TransactionApiImpl(ServiceUtil serviceUtil, TransactionService transactionService) {
         this.serviceUtil = serviceUtil;
+        this.transactionService = transactionService;
     }
 
     @Override

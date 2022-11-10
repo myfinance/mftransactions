@@ -26,8 +26,9 @@ public class InstrumentEntity implements java.io.Serializable {
     public InstrumentEntity() {
     }
 
-    public InstrumentEntity(InstrumentType instrumentType, boolean isactive) {
+    public InstrumentEntity(String businesskey, InstrumentType instrumentType, boolean isactive) {
         setInstrumentType(instrumentType);
+        this.businesskey = businesskey;
         this.isactive = isactive;
     }
 

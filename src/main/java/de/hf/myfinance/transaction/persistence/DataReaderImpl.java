@@ -7,7 +7,6 @@ import de.hf.myfinance.transaction.service.InstrumentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Component
 public class DataReaderImpl implements DataReader{
@@ -23,7 +22,10 @@ public class DataReaderImpl implements DataReader{
     }
 
     @Override
-    public Flux<Instrument> findByBusinesskeyIn(Iterable<String> businesskeyIterable) {
-        return instrumentRepository.findByBusinesskeyIn(businesskeyIterable).map(e-> instrumentMapper.entityToApi(e));
+    public Flux<Instrument> findInstrumentByBusinesskeyIn(Iterable<String> businesskeyIterable) {
+        return instrumentRepository.findByBusinesskeyIn(businesskeyIterable)
+                .map(e->
+                        instrumentMapper.entityToApi(e)
+                );
     }
 }
