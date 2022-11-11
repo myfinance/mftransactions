@@ -31,14 +31,9 @@ public class IncomeExpensesHandler extends AbsTransactionHandler{
             throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " value of cashflows not equal:"+cashflows);
         }
         return this.transactionEnvironment.getDataReader().findInstrumentByBusinesskeyIn(cashflows.keySet())
-                //.switchIfEmpty(handleNotExistingInstrument())
                 .collectList().flatMap(i->validateInstruments(i))
                 .flatMap(this::saveTransaction);
 
-    }
-
-    private Flux<Instrument> handleNotExistingInstrument(){
-        throw new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "No Instruments for this transaction available.");
     }
 
     private Mono<String> validateInstruments(List<Instrument> instruments){

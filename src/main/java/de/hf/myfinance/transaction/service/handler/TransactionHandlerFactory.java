@@ -4,12 +4,14 @@ import de.hf.framework.audit.AuditService;
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.Transaction;
-import de.hf.myfinance.restmodel.TransactionType;
 import de.hf.myfinance.transaction.events.out.EventHandler;
 import de.hf.myfinance.transaction.persistence.DataReader;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
+
+import java.time.LocalDate;
 
 @Component
 public class TransactionHandlerFactory {
@@ -35,5 +37,9 @@ public class TransactionHandlerFactory {
             default:
                 throw new MFException(MFMsgKey.UNKNOWN_TRNSACTIONTYPE_EXCEPTION, "can not create Transactionhandler for transactionType:"+transaction.getTransactionType());
         }
+    }
+
+    public Flux<Transaction> listTransactions(LocalDate startDate, LocalDate endDate) {
+        return transactionEnvironment.getDataReader().findTransactiondateBetween(startDate, endDate);
     }
 }

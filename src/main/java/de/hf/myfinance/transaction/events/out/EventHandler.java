@@ -8,6 +8,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import static de.hf.myfinance.event.Event.Type.CREATE;
+import static de.hf.myfinance.event.Event.Type.DELETE;
 
 @Component
 public class EventHandler {
@@ -21,6 +22,11 @@ public class EventHandler {
     public void sendTransactionApprovedEvent(Transaction transaction){
         sendMessage("transactionaAproved-out-0",
                 new Event(CREATE, transaction.getTransactionId(), transaction));
+    }
+
+    public void sendDeleteTransactionEvent(Transaction transaction){
+        sendMessage("transactionaAproved-out-0",
+                new Event(DELETE, transaction.getTransactionId(), transaction));
     }
 
     private void sendMessage(String bindingName, Event event) {

@@ -39,6 +39,7 @@ public class TransactionEntity  implements java.io.Serializable {
 
     private String tenantBusinesskey;
 
+    public TransactionEntity(){}
 
     public TransactionEntity(String transactionId) {
         this.transactionId = transactionId;

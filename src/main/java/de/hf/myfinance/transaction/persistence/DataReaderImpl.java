@@ -1,12 +1,14 @@
 package de.hf.myfinance.transaction.persistence;
 
 import de.hf.myfinance.restmodel.Instrument;
+import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
-import de.hf.myfinance.transaction.service.InstrumentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+
+import java.time.LocalDate;
 
 @Component
 public class DataReaderImpl implements DataReader{
@@ -27,5 +29,9 @@ public class DataReaderImpl implements DataReader{
                 .map(e->
                         instrumentMapper.entityToApi(e)
                 );
+    }
+
+    public Flux<Transaction> findTransactiondateBetween(LocalDate startDate, LocalDate endDate) {
+        return transactionRepository.findByTransactiondateBetween(startDate, endDate);
     }
 }

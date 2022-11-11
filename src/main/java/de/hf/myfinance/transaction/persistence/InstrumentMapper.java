@@ -1,4 +1,4 @@
-package de.hf.myfinance.transaction.service;
+package de.hf.myfinance.transaction.persistence;
 
 import de.hf.myfinance.restmodel.Instrument;
 import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
