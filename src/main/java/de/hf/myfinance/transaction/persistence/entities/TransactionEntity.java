@@ -31,14 +31,6 @@ public class TransactionEntity  implements java.io.Serializable {
     private Map<String, Double> cashflows = new HashMap<>(0);
     private TransactionType transactionType;
 
-
-    private InstrumentType instrumentType;
-    private boolean isactive;
-    @Indexed(unique = true)
-    private String businesskey;
-
-    private String tenantBusinesskey;
-
     public TransactionEntity(){}
 
     public TransactionEntity(String transactionId) {
@@ -58,36 +50,6 @@ public class TransactionEntity  implements java.io.Serializable {
         this.transactionId = transactionId;
     }
 
-    public InstrumentType getInstrumentType(){
-        return instrumentType;
-    }
-    public void setInstrumentType(InstrumentType instrumentType) {
-        this.instrumentType = instrumentType;
-    }
-
-    public boolean isIsactive() {
-        return this.isactive;
-    }
-    public void setIsactive(boolean isactive) {
-        this.isactive = isactive;
-    }
-
-
-    public String getTenantBusinesskey() {
-        return this.tenantBusinesskey;
-    }
-    public void setTenantBusinesskey(String tenantBusinesskey) {
-        this.tenantBusinesskey = tenantBusinesskey;
-    }
-
-    public String getBusinesskey() {
-        return this.businesskey;
-    }
-    public void setBusinesskey(String businesskey) {
-        this.businesskey = businesskey;
-    }
-
-
     public Integer getVersion() {
         return version;
     }
@@ -95,4 +57,51 @@ public class TransactionEntity  implements java.io.Serializable {
         this.version = version;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDate getTransactiondate() {
+        return transactiondate;
+    }
+
+    public void setTransactiondate(LocalDate transactiondate) {
+        this.transactiondate = transactiondate;
+    }
+
+    public LocalDateTime getLastchanged() {
+        return lastchanged;
+    }
+
+    public void setLastchanged(LocalDateTime lastchanged) {
+        this.lastchanged = lastchanged;
+    }
+
+    public Set<Trade> getTrades() {
+        return trades;
+    }
+
+    public void setTrades(Set<Trade> trades) {
+        this.trades = trades;
+    }
+
+    public Map<String, Double> getCashflows() {
+        return cashflows;
+    }
+
+    public void setCashflows(Map<String, Double> cashflows) {
+        this.cashflows = cashflows;
+    }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
 }
