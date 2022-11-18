@@ -4,63 +4,65 @@ import de.hf.myfinance.restapi.TransactionApi;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Trade;
 import de.hf.myfinance.restmodel.Transaction;
+import de.hf.myfinance.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.hf.framework.utils.ServiceUtil;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.time.LocalDate;
 
 @RestController
 public class TransactionApiImpl implements TransactionApi {
     ServiceUtil serviceUtil;
+    TransactionService transactionService;
+
+    @Value("${api.common.version}")
+    String apiVersion;
 
     @Autowired
-    public TransactionApiImpl(ServiceUtil serviceUtil) {
+    public TransactionApiImpl(ServiceUtil serviceUtil, TransactionService transactionService) {
         this.serviceUtil = serviceUtil;
+        this.transactionService = transactionService;
     }
 
     @Override
     public String index() {
-        return "Hello my TransactionService";
+        return "Hello my TransactionService version:"+apiVersion;
+    }
+
+
+    @Override
+    public Mono<String> delRecurrentTransfer(String recurrentTransactionId) {
+        return Mono.just("not implemented yet");
     }
 
     @Override
-    public void addTrade(Trade trade) {
-
+    public Mono<String> updateRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
+        return Mono.just("not implemented yet");
     }
 
     @Override
-    public void updateTrade(Trade trade) {
-
+    public Mono<String> addRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
+        return Mono.just("not implemented yet");
     }
 
     @Override
-    public void delRecurrentTransfer(String recurrentTransactionId) {
-
+    public Mono<String> saveTransaction(Transaction transaction) {
+        return transactionService.addTransaction(transaction);
     }
 
     @Override
-    public void delTransfer(String transactionId) {
-
+    public Mono<String> delTransaction(String transactionId) {
+        return Mono.just("not implemented yet");
     }
 
     @Override
-    public void updateRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
-
-    }
-
-    @Override
-    public void addRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
-
-    }
-
-    @Override
-    public void addTransaction(Transaction transaction) {
-
-    }
-
-    @Override
-    public void updateTransaction(Transaction transaction) {
-
+    public Flux<Transaction> listTransactions(LocalDate startDate, LocalDate endDate) {
+        return transactionService.listTransactions(startDate, endDate);
     }
 
 }
