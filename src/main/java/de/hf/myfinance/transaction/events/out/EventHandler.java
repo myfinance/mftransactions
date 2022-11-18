@@ -21,16 +21,16 @@ public class EventHandler {
 
     public void sendTransactionApprovedEvent(Transaction transaction){
         sendMessage("transactionaAproved-out-0",
-                new Event(CREATE, transaction.getTransactionId(), transaction));
+                new Event<String, Transaction>(CREATE, "transactionPartition", transaction));
     }
 
     public void sendDeleteTransactionEvent(Transaction transaction){
         sendMessage("transactionaAproved-out-0",
-                new Event(DELETE, transaction.getTransactionId(), transaction));
+                new Event<String, Transaction>(DELETE, "transactionPartition", transaction));
     }
 
-    private void sendMessage(String bindingName, Event event) {
-        Message message = MessageBuilder.withPayload(event)
+    private void sendMessage(String bindingName, Event<String, Transaction> event) {
+        Message<Event<String, Transaction>> message = MessageBuilder.withPayload(event)
                 .setHeader("partitionKey", event.getKey())
                 .build();
         streamBridge.send(bindingName, message);

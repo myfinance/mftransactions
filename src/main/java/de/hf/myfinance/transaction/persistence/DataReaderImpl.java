@@ -7,6 +7,7 @@ import de.hf.myfinance.transaction.persistence.repositories.TransactionRepositor
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
@@ -15,12 +16,14 @@ public class DataReaderImpl implements DataReader{
     private final InstrumentRepository instrumentRepository;
     private final InstrumentMapper instrumentMapper;
     private final TransactionRepository transactionRepository;
+    private final TransactionMapper transactionMapper;
 
     @Autowired
-    public DataReaderImpl(InstrumentRepository instrumentRepository, InstrumentMapper instrumentMapper, TransactionRepository transactionRepository) {
+    public DataReaderImpl(InstrumentRepository instrumentRepository, InstrumentMapper instrumentMapper, TransactionRepository transactionRepository, TransactionMapper transactionMapper) {
         this.instrumentRepository = instrumentRepository;
         this.instrumentMapper = instrumentMapper;
         this.transactionRepository = transactionRepository;
+        this.transactionMapper = transactionMapper;
     }
 
     @Override
@@ -31,7 +34,16 @@ public class DataReaderImpl implements DataReader{
                 );
     }
 
+    @Override
     public Flux<Transaction> findTransactiondateBetween(LocalDate startDate, LocalDate endDate) {
-        return transactionRepository.findByTransactiondateBetween(startDate, endDate);
+        return transactionRepository.findByTransactiondateBetween(startDate, endDate)
+                .map(e->
+                        transactionMapper.entityToApi(e)
+                );
+    }
+
+    @Override
+    public Mono<Transaction> findTransactiondateById(String id) {
+        return transactionRepository.findById(id).map(e->transactionMapper.entityToApi(e));
     }
 }

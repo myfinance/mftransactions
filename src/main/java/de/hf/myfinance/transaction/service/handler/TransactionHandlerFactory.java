@@ -26,14 +26,14 @@ public class TransactionHandlerFactory {
         switch(transaction.getTransactionType()){
             case INCOMEEXPENSES:
                 return new IncomeExpensesHandler(transactionEnvironment, transaction);
+            case TRANSFER:
+                return new TransferHandler(transactionEnvironment, transaction);
+            case BUDGETTRANSFER:
+                return new BudgetTransferHandler(transactionEnvironment, transaction);
             /*case LINKEDINCOMEEXPENSES:
                 return new LinkedIncomeExpensesHandler(instrumentService, transactionDao, auditService, cashflowDao);
             case TRADE:
-                return new TradeHandler(instrumentService, transactionDao, auditService, cashflowDao, tradeDao);
-            case TRANSFER:
-                return new TransferHandler(instrumentService, transactionDao, auditService, cashflowDao);
-            case BUDGETTRANSFER:
-                return new BudgetTransferHandler(instrumentService, transactionDao, auditService, cashflowDao);*/
+                return new TradeHandler(instrumentService, transactionDao, auditService, cashflowDao, tradeDao);*/
             default:
                 throw new MFException(MFMsgKey.UNKNOWN_TRNSACTIONTYPE_EXCEPTION, "can not create Transactionhandler for transactionType:"+transaction.getTransactionType());
         }

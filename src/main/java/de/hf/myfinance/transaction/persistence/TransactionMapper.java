@@ -22,6 +22,6 @@ public interface TransactionMapper {
     List<TransactionEntity> apiListToEntityList(List<Transaction> api);
 
     default Transaction createTransaction() {
-        return new Transaction("");
+        return new Transaction();
     }
 }
