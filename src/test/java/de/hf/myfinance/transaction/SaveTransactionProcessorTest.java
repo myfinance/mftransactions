@@ -1,11 +1,8 @@
 package de.hf.myfinance.transaction;
 
 import de.hf.myfinance.event.Event;
-import de.hf.myfinance.restmodel.Instrument;
-import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.restmodel.TransactionType;
-import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
