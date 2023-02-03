@@ -29,21 +29,23 @@ public class DataReaderImpl implements DataReader{
     @Override
     public Flux<Instrument> findInstrumentByBusinesskeyIn(Iterable<String> businesskeyIterable) {
         return instrumentRepository.findByBusinesskeyIn(businesskeyIterable)
-                .map(e->
-                        instrumentMapper.entityToApi(e)
-                );
+                .map(instrumentMapper::entityToApi);
     }
 
     @Override
     public Flux<Transaction> findTransactiondateBetween(LocalDate startDate, LocalDate endDate) {
         return transactionRepository.findByTransactiondateBetween(startDate, endDate)
-                .map(e->
-                        transactionMapper.entityToApi(e)
-                );
+                .map(transactionMapper::entityToApi);
     }
 
     @Override
     public Mono<Transaction> findTransactiondateById(String id) {
-        return transactionRepository.findById(id).map(e->transactionMapper.entityToApi(e));
+        return transactionRepository.findById(id).map(transactionMapper::entityToApi);
+    }
+
+    @Override
+    public Mono<Instrument> findByBusinesskey(String businesskey){
+        return instrumentRepository.findByBusinesskey(businesskey)
+                .map(instrumentMapper::entityToApi);
     }
 }

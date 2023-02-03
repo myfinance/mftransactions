@@ -12,4 +12,5 @@ public interface DataReader {
     Flux<Instrument> findInstrumentByBusinesskeyIn(Iterable<String> businesskeyIterable);
     Flux<Transaction> findTransactiondateBetween(LocalDate startDate, LocalDate endDate);
     Mono<Transaction> findTransactiondateById(String id);
+    Mono<Instrument> findByBusinesskey(String businesskey);
 }

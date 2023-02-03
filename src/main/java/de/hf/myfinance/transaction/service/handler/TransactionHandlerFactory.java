@@ -4,7 +4,7 @@ import de.hf.framework.audit.AuditService;
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.Transaction;
-import de.hf.myfinance.transaction.events.out.EventHandler;
+import de.hf.myfinance.transaction.events.out.TransactionApprovedEventHandler;
 import de.hf.myfinance.transaction.persistence.DataReader;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class TransactionHandlerFactory {
     private final TransactionEnvironment transactionEnvironment;
 
     @Autowired
-    public TransactionHandlerFactory(DataReader dataReader, AuditService auditService, EventHandler eventHandler) {
+    public TransactionHandlerFactory(DataReader dataReader, AuditService auditService, TransactionApprovedEventHandler eventHandler) {
         transactionEnvironment = new TransactionEnvironment(dataReader, auditService, eventHandler);
     }
 
@@ -30,10 +30,6 @@ public class TransactionHandlerFactory {
                 return new TransferHandler(transactionEnvironment, transaction);
             case BUDGETTRANSFER:
                 return new BudgetTransferHandler(transactionEnvironment, transaction);
-            /*case LINKEDINCOMEEXPENSES:
-                return new LinkedIncomeExpensesHandler(instrumentService, transactionDao, auditService, cashflowDao);
-            case TRADE:
-                return new TradeHandler(instrumentService, transactionDao, auditService, cashflowDao, tradeDao);*/
             default:
                 throw new MFException(MFMsgKey.UNKNOWN_TRNSACTIONTYPE_EXCEPTION, "can not create Transactionhandler for transactionType:"+transaction.getTransactionType());
         }

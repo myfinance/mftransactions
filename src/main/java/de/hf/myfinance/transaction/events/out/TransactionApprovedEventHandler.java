@@ -11,22 +11,22 @@ import static de.hf.myfinance.event.Event.Type.CREATE;
 import static de.hf.myfinance.event.Event.Type.DELETE;
 
 @Component
-public class EventHandler {
+public class TransactionApprovedEventHandler {
 
     private final StreamBridge streamBridge;
 
-    public EventHandler(StreamBridge streamBridge){
+    public TransactionApprovedEventHandler(StreamBridge streamBridge){
         this.streamBridge = streamBridge;
     }
 
     public void sendTransactionApprovedEvent(Transaction transaction){
         sendMessage("transactionaAproved-out-0",
-                new Event<String, Transaction>(CREATE, "transactionPartition", transaction));
+                new Event<>(CREATE, "transactionPartition", transaction));
     }
 
     public void sendDeleteTransactionEvent(Transaction transaction){
         sendMessage("transactionaAproved-out-0",
-                new Event<String, Transaction>(DELETE, "transactionPartition", transaction));
+                new Event<>(DELETE, "transactionPartition", transaction));
     }
 
     private void sendMessage(String bindingName, Event<String, Transaction> event) {

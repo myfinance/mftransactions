@@ -28,10 +28,28 @@ spring.cloud.stream:
   bindings.saveTransactionProcessor-in-0:
     destination: transactionApproved
     group: saveTransactionGroup
+  bindings.validateRecurrentTransactionProcessor-in-0:
+    destination: validateRecurrentTransactionRequest
+    group: validateRecurrentTransactionGroup
+  bindings.saveRecurrentTransactionProcessor-in-0:
+    destination: recurrentTransactionApproved
+    group: saveRecurrentTransactionGroup
   bindings.transactionaAproved-out-0:
     destination: transactionApproved
     producer:
       required-groups: transactionApprovedAuditGroup
+  bindings.validateTransactionRequest-out-0:
+    destination: validateTransactionRequest
+    producer:
+      required-groups: validateTransactionRequestAuditGroup
+  bindings.validateRecurrentTransactionRequest-out-0:
+    destination: validateRecurrentTransactionRequest
+    producer:
+      required-groups: validateRecurrentTransactionRequestAuditGroup
+  bindings.recurrentTransactionaAproved-out-0:
+    destination: recurrentTransactionApproved
+    producer:
+      required-groups: recurrentTransactionApprovedAuditGroup
 
 spring.cloud.stream.bindings.validateTransactionProcessor-in-0.consumer:
   maxAttempts: 3
