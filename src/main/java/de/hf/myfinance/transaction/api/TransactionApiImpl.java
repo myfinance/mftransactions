@@ -21,6 +21,7 @@ import reactor.core.scheduler.Scheduler;
 import java.time.LocalDate;
 
 import static de.hf.myfinance.event.Event.Type.CREATE;
+import static de.hf.myfinance.event.Event.Type.DELETE;
 
 @RestController
 public class TransactionApiImpl implements TransactionApi {
@@ -49,12 +50,20 @@ public class TransactionApiImpl implements TransactionApi {
 
     @Override
     public Mono<String> delRecurrentTransfer(String recurrentTransactionId) {
-        return Mono.just("not implemented yet");
+        //there is no need to validate a recurrentTransaction for deletion. You can allways do this as long as the recurrenttransaction exists.
+        // The SaveRecurrentTransactionProcessor will check this. So you can directly send the Approve event
+        return Mono.fromCallable(() -> {
+            var recurrentTransaction = new RecurrentTransaction();
+            recurrentTransaction.setRecurrentTransactionId(recurrentTransactionId);
+            sendMessage("recurrentTransactionaAproved-out-0",
+                    new Event<>(DELETE, recurrentTransactionId, recurrentTransaction));
+            return "recurrentTransaction deleted:"+recurrentTransaction;
+        }).subscribeOn(publishEventScheduler);
     }
 
 
     @Override
-    public Mono<String> addRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
+    public Mono<String> saveRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
         return Mono.fromCallable(() -> {
 
             sendMessage("validateRecurrentTransactionRequest-out-0",
@@ -65,7 +74,7 @@ public class TransactionApiImpl implements TransactionApi {
 
     @Override
     public Mono<String> saveTransaction(Transaction transaction) {
-        return transactionService.addTransaction(transaction);
+        return transactionService.validateTransaction(transaction);
     }
 
     @Override

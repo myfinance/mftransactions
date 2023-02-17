@@ -3,6 +3,7 @@ package de.hf.myfinance.transaction;
 import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
+import de.hf.myfinance.transaction.persistence.repositories.RecurrentTransactionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
 import de.hf.testhelper.MongoDbTestBase;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     TransactionRepository transactionRepository;
 
     @Autowired
+    RecurrentTransactionRepository recurrentTransactionRepository;
+
+    @Autowired
     private OutputDestination target;
 
     String bindingName = "transactionaAproved-out-0";
@@ -50,6 +54,7 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     void setupDb() {
         instrumentRepository.deleteAll().block();
         transactionRepository.deleteAll().block();
+        recurrentTransactionRepository.deleteAll().block();
         purgeMessages(bindingName);
     }
 

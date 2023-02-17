@@ -8,6 +8,7 @@ import de.hf.myfinance.transaction.events.out.RecurrentTransactionApprovedEventH
 import de.hf.myfinance.transaction.persistence.DataReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -52,21 +53,21 @@ public class RecurrentTransactionHandler {
 
     private Mono<RecurrentTransaction> validateFrequency(RecurrentTransaction recurrentTransaction){
         if(recurrentTransaction.getRecurrentFrequency() == RecurrentFrequency.UNKNOWN) {
-            return auditService.handleMonoError("no valid frequency", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION);
+            return auditService.handleMonoError("no valid frequency", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
         }
         return Mono.just(recurrentTransaction);
     }
 
     private Mono<RecurrentTransaction> validateNextTransactionDate(RecurrentTransaction recurrentTransaction){
         if(!recurrentTransaction.getNextTransactionDate().isAfter(LocalDate.now())) {
-            return auditService.handleMonoError("nextTransactionDate is in the past", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION);
+            return auditService.handleMonoError("nextTransactionDate is in the past", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
         }
         return Mono.just(recurrentTransaction);
     }
 
     private Mono<Instrument> handleNotExistingInstrument(String businesskey){
         String errorMsg = ERROR_MSG+ " Instrument for businesskey:" +businesskey + " does not exists.";
-        return auditService.handleMonoError(errorMsg, AUDIT_MSG_TYPE, MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION);
+        return auditService.handleMonoError(errorMsg, AUDIT_MSG_TYPE, MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION).cast(Instrument.class);
     }
 
     protected RecurrentTransaction evaluateRecurrentTransactionType(Instrument firstInstrument, Instrument secondInstrument, RecurrentTransaction recurrentTransaction) {
@@ -103,5 +104,9 @@ public class RecurrentTransactionHandler {
         } else {
             return RecurrentTransactionType.INCOME;
         }
+    }
+
+    public Flux<RecurrentTransaction> listRecurrentTransactions() {
+        return dataReader.findRecurrentTransactions();
     }
 }

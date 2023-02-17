@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Configuration
@@ -27,16 +28,12 @@ public class ValidateTransactionProcessorConfig {
         return event -> {
             LOG.info("Process message created at {}...", event.getEventCreatedAt());
 
-            switch (event.getEventType()) {
-
-                case CREATE:
-                    Transaction transaction = event.getData();
-                    transactionService.addTransaction(transaction).block();
-                    break;
-
-                default:
-                    String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE event";
-                    LOG.warn(errorMessage);
+            if (Objects.requireNonNull(event.getEventType()) == Event.Type.CREATE) {
+                Transaction transaction = event.getData();
+                transactionService.validateTransaction(transaction).block();
+            } else {
+                String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE event";
+                LOG.warn(errorMessage);
             }
 
             LOG.info("Message processing done!");

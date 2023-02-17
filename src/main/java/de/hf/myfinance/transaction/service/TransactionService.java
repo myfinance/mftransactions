@@ -27,7 +27,7 @@ public class TransactionService {
         return recurrentTransactionHandler.validateRecurrentTransaction(recurrentTransaction);
     }
 
-    public Mono<String> addTransaction(Transaction transaction) {
+    public Mono<String> validateTransaction(Transaction transaction) {
         return transactionHandlerFactory.createTransactionHandler(transaction).validate();
     }
 
@@ -36,6 +36,6 @@ public class TransactionService {
     }
 
     public Flux<RecurrentTransaction> listRecurrentTransactions() {
-        return null;
+        return recurrentTransactionHandler.listRecurrentTransactions();
     }
 }

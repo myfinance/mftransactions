@@ -1,8 +1,10 @@
 package de.hf.myfinance.transaction.persistence;
 
 import de.hf.myfinance.restmodel.Instrument;
+import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
+import de.hf.myfinance.transaction.persistence.repositories.RecurrentTransactionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,13 +19,19 @@ public class DataReaderImpl implements DataReader{
     private final InstrumentMapper instrumentMapper;
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
+    private final RecurrentTransactionMapper recurrentTransactionMapper;
+    private final RecurrentTransactionRepository recurrentTransactionRepository;
 
     @Autowired
-    public DataReaderImpl(InstrumentRepository instrumentRepository, InstrumentMapper instrumentMapper, TransactionRepository transactionRepository, TransactionMapper transactionMapper) {
+    public DataReaderImpl(InstrumentRepository instrumentRepository, InstrumentMapper instrumentMapper,
+                          TransactionRepository transactionRepository, TransactionMapper transactionMapper,
+                          RecurrentTransactionMapper recurrentTransactionMapper, RecurrentTransactionRepository recurrentTransactionRepository) {
         this.instrumentRepository = instrumentRepository;
         this.instrumentMapper = instrumentMapper;
         this.transactionRepository = transactionRepository;
         this.transactionMapper = transactionMapper;
+        this.recurrentTransactionMapper = recurrentTransactionMapper;
+        this.recurrentTransactionRepository = recurrentTransactionRepository;
     }
 
     @Override
@@ -47,5 +55,12 @@ public class DataReaderImpl implements DataReader{
     public Mono<Instrument> findByBusinesskey(String businesskey){
         return instrumentRepository.findByBusinesskey(businesskey)
                 .map(instrumentMapper::entityToApi);
+    }
+
+
+    @Override
+    public Flux<RecurrentTransaction> findRecurrentTransactions(){
+        return recurrentTransactionRepository.findAll()
+                .map(recurrentTransactionMapper::entityToApi);
     }
 }
