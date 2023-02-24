@@ -34,7 +34,7 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         validateCashflowNumber(cashflows);
         validateCashflowValue(cashflows);
         return this.transactionEnvironment.getDataReader().findInstrumentByBusinesskeyIn(cashflows.keySet())
-                .collectList().flatMap(i->validateInstruments(i))
+                .collectList().flatMap(this::validateInstruments)
                 .flatMap(this::saveTransaction);
     }
 
@@ -54,10 +54,19 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         validateInstrumentNumber(instruments);
         validateTenant(instruments);
         validateInstrumentTypes(instruments);
+        validateInstrumentStatus(instruments);
         return Mono.just("valid Transaction");
     }
 
     protected abstract void validateInstrumentTypes(List<Instrument> instruments);
+
+    protected void validateInstrumentStatus(List<Instrument> instruments){
+        instruments.forEach(i->{
+            if(!i.isActive()){
+                throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, "No new Transactions allowd for inactive instruments:"+ i);
+            }
+        });
+    }
 
     protected Mono<String> validateExistingTransaction(String msg){
         if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()) {
