@@ -3,7 +3,7 @@ package de.hf.myfinance.transaction;
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.RecurrentFrequency;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
-import de.hf.myfinance.restmodel.RecurrentTransactionType;
+import de.hf.myfinance.restmodel.TransactionType;
 import de.hf.testhelper.JsonHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
         validateRecurrentTransactionProcessor.accept(creatEvent);
 
-        final List<String> messages = getMessages("recurrentTransactionaAproved-out-0");
+        final List<String> messages = getMessages("recurrentTransactionApproved-out-0");
         assertEquals(1, messages.size());
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
@@ -56,7 +56,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
-        assertEquals(RecurrentTransactionType.INCOME.toString(), data.get("recurrentTransactionType"));
+        assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
     }
 
     @Test
@@ -75,7 +75,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
         validateRecurrentTransactionProcessor.accept(creatEvent);
 
-        final List<String> messages = getMessages("recurrentTransactionaAproved-out-0");
+        final List<String> messages = getMessages("recurrentTransactionApproved-out-0");
         assertEquals(1, messages.size());
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
@@ -85,7 +85,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(-100.0, data.get("value"));
-        assertEquals(RecurrentTransactionType.EXPENSE.toString(), data.get("recurrentTransactionType"));
+        assertEquals(TransactionType.EXPENSE.toString(), data.get("transactionType"));
     }
 
     @Test
@@ -104,7 +104,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
         validateRecurrentTransactionProcessor.accept(creatEvent);
 
-        final List<String> messages = getMessages("recurrentTransactionaAproved-out-0");
+        final List<String> messages = getMessages("recurrentTransactionApproved-out-0");
         assertEquals(1, messages.size());
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
@@ -114,7 +114,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
-        assertEquals(RecurrentTransactionType.TRANSFER.toString(), data.get("recurrentTransactionType"));
+        assertEquals(TransactionType.TRANSFER.toString(), data.get("transactionType"));
     }
 
     @Test
@@ -133,7 +133,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
         validateRecurrentTransactionProcessor.accept(creatEvent);
 
-        final List<String> messages = getMessages("recurrentTransactionaAproved-out-0");
+        final List<String> messages = getMessages("recurrentTransactionApproved-out-0");
         assertEquals(1, messages.size());
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
@@ -143,6 +143,6 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
-        assertEquals(RecurrentTransactionType.BUDGETTRANSFER.toString(), data.get("recurrentTransactionType"));
+        assertEquals(TransactionType.BUDGETTRANSFER.toString(), data.get("transactionType"));
     }
 }

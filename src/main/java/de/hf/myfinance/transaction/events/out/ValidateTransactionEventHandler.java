@@ -8,25 +8,18 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import static de.hf.myfinance.event.Event.Type.CREATE;
-import static de.hf.myfinance.event.Event.Type.DELETE;
 
 @Component
-public class TransactionApprovedEventHandler {
-
+public class ValidateTransactionEventHandler {
     private final StreamBridge streamBridge;
 
-    public TransactionApprovedEventHandler(StreamBridge streamBridge){
+    public ValidateTransactionEventHandler(StreamBridge streamBridge){
         this.streamBridge = streamBridge;
     }
 
-    public void sendTransactionApprovedEvent(Transaction transaction){
-        sendMessage("transactionApproved-out-0",
+    public void sendTransactionValidationRequestEvent(Transaction transaction){
+        sendMessage("validateTransactionRequest-out-0",
                 new Event<>(CREATE, "transactionPartition", transaction));
-    }
-
-    public void sendDeleteTransactionEvent(Transaction transaction){
-        sendMessage("transactionApproved-out-0",
-                new Event<>(DELETE, "transactionPartition", transaction));
     }
 
     private void sendMessage(String bindingName, Event<String, Transaction> event) {

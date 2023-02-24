@@ -1,7 +1,5 @@
 package de.hf.myfinance.transaction;
 
-
-import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.restmodel.TransactionType;
 import de.hf.myfinance.transaction.persistence.entities.TransactionEntity;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
@@ -33,7 +31,7 @@ public class PersistenceTests extends MongoDbTestBase {
     void create() {
         var transaction = new TransactionEntity();
         transaction.setTransactiondate(LocalDate.of(2022, 1, 1));
-        transaction.setTransactionType(TransactionType.INCOMEEXPENSES);
+        transaction.setTransactionType(TransactionType.INCOME);
         transaction.setDescription("testeinkommen");
         var cashflows = new HashMap<String, Double>();
         cashflows.put("budget", 100.0);
@@ -44,7 +42,7 @@ public class PersistenceTests extends MongoDbTestBase {
 
         var transaction2 = new TransactionEntity();
         transaction2.setTransactiondate(LocalDate.of(2022, 2, 1));
-        transaction2.setTransactionType(TransactionType.INCOMEEXPENSES);
+        transaction2.setTransactionType(TransactionType.INCOME);
         transaction2.setDescription("testeinkommen2");
         var cashflows2 = new HashMap<String, Double>();
         cashflows.put("budget", 100.0);

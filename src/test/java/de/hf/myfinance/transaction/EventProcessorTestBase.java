@@ -35,7 +35,9 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     @Autowired
     private OutputDestination target;
 
-    String bindingName = "transactionaAproved-out-0";
+    String transactionApprovedBindingName = "transactionApproved-out-0";
+    String recurrentTransactionApprovedBindingName = "recurrentTransactionApproved-out-0";
+    String validateTransactionBindingName = "validateTransactionRequest-out-0";
 
     String tenantDesc = "aTest";
     String tenantKey = "aTest@6";
@@ -50,12 +52,16 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     String giro2Key = "newGiro2@1";
     String giroOtherTenantKey = "newOtherTenantGiro2@1";
 
+    String inactivebgtKey = "inactivebudget@10";
+
     @BeforeEach
     void setupDb() {
         instrumentRepository.deleteAll().block();
         transactionRepository.deleteAll().block();
         recurrentTransactionRepository.deleteAll().block();
-        purgeMessages(bindingName);
+        purgeMessages(transactionApprovedBindingName);
+        purgeMessages(recurrentTransactionApprovedBindingName);
+        purgeMessages(validateTransactionBindingName);
     }
 
     protected void purgeMessages(String bindingName) {
@@ -107,5 +113,9 @@ public class EventProcessorTestBase extends MongoDbTestBase {
         var girootherTenant = new InstrumentEntity(giroOtherTenantKey, InstrumentType.GIRO, true);
         girootherTenant.setTenantBusinesskey(otherTenantKey);
         instrumentRepository.save(girootherTenant).block();
+
+        var inactivebudget = new InstrumentEntity(inactivebgtKey, InstrumentType.BUDGET, false);
+        inactivebudget.setTenantBusinesskey(tenantKey);
+        instrumentRepository.save(inactivebudget).block();
     }
 }

@@ -38,4 +38,8 @@ public class TransactionService {
     public Flux<RecurrentTransaction> listRecurrentTransactions() {
         return recurrentTransactionHandler.listRecurrentTransactions();
     }
+
+    public Mono<String> processRecurrentTransactions(){
+        return recurrentTransactionHandler.process();
+    }
 }

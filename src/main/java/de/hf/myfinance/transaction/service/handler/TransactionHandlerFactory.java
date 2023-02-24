@@ -24,7 +24,7 @@ public class TransactionHandlerFactory {
 
     public TransactionHandler createTransactionHandler(Transaction transaction) {
         switch(transaction.getTransactionType()){
-            case INCOMEEXPENSES:
+            case INCOME, EXPENSE:
                 return new IncomeExpensesHandler(transactionEnvironment, transaction);
             case TRANSFER:
                 return new TransferHandler(transactionEnvironment, transaction);

@@ -28,7 +28,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
         recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
         recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
-        recurrentTransaction.setRecurrentTransactionType(RecurrentTransactionType.INCOME);
+        recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.hashCode(), recurrentTransaction);
@@ -39,7 +39,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
 
         var savedRecurrentTransactions = recurrentTransactions.get(0);
         assertNotNull(savedRecurrentTransactions.getRecurrentTransactionId());
-        assertEquals(RecurrentTransactionType.INCOME, savedRecurrentTransactions.getRecurrentTransactionType());
+        assertEquals(TransactionType.INCOME, savedRecurrentTransactions.getTransactionType());
         assertEquals(nextTransactiondate, savedRecurrentTransactions.getNextTransactionDate());
         assertEquals(RecurrentFrequency.MONTHLY, savedRecurrentTransactions.getRecurrentFrequency());
         assertEquals(giroKey, savedRecurrentTransactions.getFirstInstrumentBusinessKey());
@@ -58,7 +58,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
         recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
         recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
-        recurrentTransaction.setRecurrentTransactionType(RecurrentTransactionType.INCOME);
+        recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.hashCode(), recurrentTransaction);
@@ -77,7 +77,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
 
         savedRecurrentTransactions = recurrentTransactions.get(0);
         assertNotNull(savedRecurrentTransactions.getRecurrentTransactionId());
-        assertEquals(RecurrentTransactionType.INCOME, savedRecurrentTransactions.getRecurrentTransactionType());
+        assertEquals(TransactionType.INCOME, savedRecurrentTransactions.getTransactionType());
         assertEquals(nextTransactiondate, savedRecurrentTransactions.getNextTransactionDate());
         assertEquals(RecurrentFrequency.MONTHLY, savedRecurrentTransactions.getRecurrentFrequency());
         assertEquals(giroKey, savedRecurrentTransactions.getFirstInstrumentBusinessKey());
@@ -96,7 +96,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
         recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
         recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
-        recurrentTransaction.setRecurrentTransactionType(RecurrentTransactionType.INCOME);
+        recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.hashCode(), recurrentTransaction);

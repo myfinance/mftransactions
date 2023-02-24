@@ -1,7 +1,7 @@
 package de.hf.myfinance.transaction.persistence.entities;
 
 import de.hf.myfinance.restmodel.RecurrentFrequency;
-import de.hf.myfinance.restmodel.RecurrentTransactionType;
+import de.hf.myfinance.restmodel.TransactionType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,7 +19,8 @@ public class RecurrentTransactionEntity {
     private RecurrentFrequency recurrentFrequency;
     private double value;
     private LocalDate nextTransactionDate;
-    private RecurrentTransactionType recurrentTransactionType;
+    private TransactionType transactionType;
+    private String description;
 
     public String getRecurrentTransactionId() {
         return this.recurrentTransactionId;
@@ -76,11 +77,18 @@ public class RecurrentTransactionEntity {
         this.nextTransactionDate = nextTransactionDate;
     }
 
-    public RecurrentTransactionType getRecurrentTransactionType() {
-        return this.recurrentTransactionType;
+    public TransactionType getTransactionType() {
+        return this.transactionType;
     }
 
-    public void setRecurrentTransactionType(RecurrentTransactionType recurrentTransactionType) {
-        this.recurrentTransactionType = recurrentTransactionType;
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -19,9 +19,6 @@ public class SaveTransactionProcessorTest extends EventProcessorTestBase {
     @Qualifier("saveTransactionProcessor")
     protected Consumer<Event<String, Transaction>> saveTransactionProcessor;
 
-
-
-
     @Test
     void createTransaction() {
 
@@ -29,7 +26,7 @@ public class SaveTransactionProcessorTest extends EventProcessorTestBase {
 
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.INCOMEEXPENSES);
+        var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
         var cashflows = new HashMap<String, Double>();
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);
@@ -44,7 +41,7 @@ public class SaveTransactionProcessorTest extends EventProcessorTestBase {
         var savedtransaction = transactions.get(0);
         assertNotNull(savedtransaction.getTransactionId());
         assertEquals(desc, savedtransaction.getDescription());
-        assertEquals(TransactionType.INCOMEEXPENSES, savedtransaction.getTransactionType());
+        assertEquals(TransactionType.INCOME, savedtransaction.getTransactionType());
         assertEquals(transactionDate, savedtransaction.getTransactiondate());
         assertEquals(2, savedtransaction.getCashflows().size());
     }
@@ -56,7 +53,7 @@ public class SaveTransactionProcessorTest extends EventProcessorTestBase {
 
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.INCOMEEXPENSES);
+        var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
         var cashflows = new HashMap<String, Double>();
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);
@@ -71,7 +68,7 @@ public class SaveTransactionProcessorTest extends EventProcessorTestBase {
         var savedtransaction = transactions.get(0);
         assertNotNull(savedtransaction.getTransactionId());
         assertEquals(desc, savedtransaction.getDescription());
-        assertEquals(TransactionType.INCOMEEXPENSES, savedtransaction.getTransactionType());
+        assertEquals(TransactionType.INCOME, savedtransaction.getTransactionType());
         assertEquals(transactionDate, savedtransaction.getTransactiondate());
         assertEquals(2, savedtransaction.getCashflows().size());
 
@@ -91,7 +88,7 @@ public class SaveTransactionProcessorTest extends EventProcessorTestBase {
 
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.INCOMEEXPENSES);
+        var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
         var cashflows = new HashMap<String, Double>();
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);

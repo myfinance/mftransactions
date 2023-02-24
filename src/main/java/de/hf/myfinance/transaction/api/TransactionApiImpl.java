@@ -20,8 +20,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.time.LocalDate;
 
-import static de.hf.myfinance.event.Event.Type.CREATE;
-import static de.hf.myfinance.event.Event.Type.DELETE;
+import static de.hf.myfinance.event.Event.Type.*;
 
 @RestController
 public class TransactionApiImpl implements TransactionApi {
@@ -96,8 +95,8 @@ public class TransactionApiImpl implements TransactionApi {
     public Mono<String> processRecurrentTransaction() {
         return Mono.fromCallable(() -> {
 
-            sendMessage("processRecurrentTransaction-out-0",
-                    new Event<>(CREATE, "processRecurrentTransactions", null));
+            sendMessage("processRecurrentTransactions-out-0",
+                    new Event<>(START, "processRecurrentTransactions", null));
             return "process recurrent Transactions started:";
         }).subscribeOn(publishEventScheduler);
     }

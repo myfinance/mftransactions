@@ -46,7 +46,7 @@ public class SaveRecurrentTransactionProcessorConfig {
                             .switchIfEmpty(Mono.error(new MFException(MFMsgKey.NO_VALID_RECURRENTTRANSACTION, " id not found:"+ recurrentTransactionEntity.getRecurrentTransactionId())))
                             .map(e -> {
                                     e.setNextTransactionDate(recurrentTransactionEntity.getNextTransactionDate());
-                                    e.setRecurrentTransactionType(recurrentTransactionEntity.getRecurrentTransactionType());
+                                    e.setTransactionType(recurrentTransactionEntity.getTransactionType());
                                     e.setFirstInstrumentBusinessKey(recurrentTransactionEntity.getFirstInstrumentBusinessKey());
                                     e.setSecondInstrumentBusinessKey(recurrentTransactionEntity.getSecondInstrumentBusinessKey());
                                     e.setValue(recurrentTransactionEntity.getValue());

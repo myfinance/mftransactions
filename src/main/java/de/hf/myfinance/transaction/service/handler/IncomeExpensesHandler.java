@@ -5,6 +5,7 @@ import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.Instrument;
 import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.restmodel.Transaction;
+import de.hf.myfinance.restmodel.TransactionType;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
 
 import java.util.List;
@@ -24,6 +25,12 @@ public class IncomeExpensesHandler extends AbsTransactionHandler{
         var values = cashflows.values().stream().toList();
         if(!values.get(0).equals(values.get(1))) {
             throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " value of cashflows not equal:"+ cashflows);
+        }
+        if(transaction.getTransactionType().equals(TransactionType.INCOME) && values.get(0) < 0) {
+            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " negative values for income not allowed:"+ cashflows);
+        }
+        if(transaction.getTransactionType().equals(TransactionType.EXPENSE) && values.get(0) > 0) {
+            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " positive values for expense not allowed:"+ cashflows);
         }
     }
 

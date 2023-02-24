@@ -15,4 +15,5 @@ public interface DataReader {
     Mono<Transaction> findTransactiondateById(String id);
     Mono<Instrument> findByBusinesskey(String businesskey);
     Flux<RecurrentTransaction> findRecurrentTransactions();
+    Flux<RecurrentTransaction> findRecurrentTransactionsByInstrument(String businesskey);
 }

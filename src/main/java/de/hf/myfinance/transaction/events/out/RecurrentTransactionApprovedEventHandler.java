@@ -20,12 +20,12 @@ public class RecurrentTransactionApprovedEventHandler {
     }
 
     public void sendRecurrentTransactionApprovedEvent(RecurrentTransaction recurrentTransaction){
-        sendMessage("recurrentTransactionaAproved-out-0",
+        sendMessage("recurrentTransactionApproved-out-0",
                 new Event<>(CREATE, "transactionPartition", recurrentTransaction));
     }
 
     public void sendDeleteRecurrentEvent(RecurrentTransaction recurrentTransaction){
-        sendMessage("recurrentTransactionaAproved-out-0",
+        sendMessage("recurrentTransactionApproved-out-0",
                 new Event<>(DELETE, "transactionPartition", recurrentTransaction));
     }
 
