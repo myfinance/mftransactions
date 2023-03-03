@@ -14,7 +14,7 @@ springdoc:
 spring:
   cloud:
     function:
-      definition: saveInstrumentProcessor;saveTransactionProcessor;validateTransactionProcessor
+      definition: saveInstrumentProcessor;saveTransactionProcessor;validateTransactionProcessor;validateRecurrentTransactionProcessor;saveRecurrentTransactionProcessor;processRecurrentTransactionsProcessor
 
 spring.cloud.stream:
   defaultBinder: rabbit
