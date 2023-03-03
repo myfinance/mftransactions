@@ -1,4 +1,4 @@
-server.port: 7004
+server.port: 7002
 logging:
   level:
     root: INFO
