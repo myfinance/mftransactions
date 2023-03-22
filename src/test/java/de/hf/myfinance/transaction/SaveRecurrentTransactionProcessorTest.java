@@ -129,4 +129,30 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
             saveRecurrentTransactionProcessor.accept(creatEvent);
         });
     }
+
+    @Test
+    void createRecurrentTransactionWithEmpteId() {
+
+        initDb();
+
+        var nextTransactiondate = LocalDate.now().plusMonths(1);
+        var recurrentTransaction = new RecurrentTransaction();
+        recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
+        recurrentTransaction.setNextTransactionDate(nextTransactiondate);
+        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
+        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setTransactionType(TransactionType.INCOME);
+        recurrentTransaction.setValue(100);
+
+        Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.hashCode(), recurrentTransaction);
+        saveRecurrentTransactionProcessor.accept(creatEvent);
+
+        var recurrentTransactions = recurrentTransactionRepository.findAll().collectList().block();
+        assertEquals(1, recurrentTransactions.size());
+
+        var savedRecurrentTransactions = recurrentTransactions.get(0);
+        assertNotNull(savedRecurrentTransactions.getRecurrentTransactionId());
+        assertNotEquals("", savedRecurrentTransactions.getRecurrentTransactionId());
+
+    }
 }

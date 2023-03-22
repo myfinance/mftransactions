@@ -4,6 +4,7 @@ import de.hf.framework.audit.Severity;
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.Instrument;
+import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
 import reactor.core.publisher.Mono;
@@ -26,6 +27,7 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
     public Mono<String> validate() {
         validateTransactionDate(transaction.getTransactiondate());
         validateTransactionDesc(transaction.getDescription());
+        validateTransactionId();
         return validateCashflows(transaction.getCashflows())
                 .flatMap(this::validateExistingTransaction);
     }
@@ -104,6 +106,12 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         var values = cashflows.values().stream().toList();
         if(!values.get(0).equals(values.get(1)*(-1))) {
             throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " value of cashflows not equal:"+ cashflows);
+        }
+    }
+
+    protected void validateTransactionId(){
+        if(transaction.getTransactionId() != null && transaction.getTransactionId().trim().isEmpty()) {
+            transaction.setTransactionId(null);
         }
     }
 

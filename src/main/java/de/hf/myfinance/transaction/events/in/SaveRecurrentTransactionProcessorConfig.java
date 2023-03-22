@@ -38,7 +38,8 @@ public class SaveRecurrentTransactionProcessorConfig {
 
             if (event.getEventType() == Event.Type.CREATE) {
                 var recurrentTransactionEntity = recurrentTransactionMapper.apiToEntity(event.getData());
-                if(recurrentTransactionEntity.getRecurrentTransactionId()==null || recurrentTransactionEntity.getRecurrentTransactionId().isEmpty()) {
+
+                if(recurrentTransactionEntity.getRecurrentTransactionId()==null) {
                     recurrentTransactionRepository.save(recurrentTransactionEntity).block();
                     auditService.saveMessage("recurrentTransaction inserted:" + recurrentTransactionEntity, Severity.INFO, AUDIT_MSG_TYPE);
                 } else {

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -41,6 +42,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
         recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
         recurrentTransaction.setValue(100);
+        recurrentTransaction.setRecurrentTransactionId(" ");
 
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
@@ -57,6 +59,7 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
+        assertNull(data.get("recurrentTransactionId"));
     }
 
     @Test

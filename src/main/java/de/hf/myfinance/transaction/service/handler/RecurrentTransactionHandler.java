@@ -95,6 +95,7 @@ public class RecurrentTransactionHandler {
                 .zipWith(getInstrument(recurrentTransaction.getSecondInstrumentBusinessKey()), (i1, i2) -> evaluateRecurrentTransactionType(i1, i2, recurrentTransaction))
                 .flatMap(this::validateFrequency)
                 .flatMap(this::validateNextTransactionDate)
+                .flatMap(this::validateRecurrentTransactionId)
                 .flatMap(this::recurrentTransactionApproved);
     }
 
@@ -120,6 +121,13 @@ public class RecurrentTransactionHandler {
     private Mono<RecurrentTransaction> validateNextTransactionDate(RecurrentTransaction recurrentTransaction){
         if(!recurrentTransaction.getNextTransactionDate().isAfter(LocalDate.now())) {
             return auditService.handleMonoError("nextTransactionDate is in the past", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
+        }
+        return Mono.just(recurrentTransaction);
+    }
+
+    private Mono<RecurrentTransaction> validateRecurrentTransactionId(RecurrentTransaction recurrentTransaction){
+        if(recurrentTransaction.getRecurrentTransactionId()!=null && recurrentTransaction.getRecurrentTransactionId().trim().isEmpty()) {
+            recurrentTransaction.setRecurrentTransactionId(null);
         }
         return Mono.just(recurrentTransaction);
     }

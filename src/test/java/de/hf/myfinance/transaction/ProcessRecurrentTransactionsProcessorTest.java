@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -75,6 +76,7 @@ public class ProcessRecurrentTransactionsProcessorTest extends EventProcessorTes
         assertEquals(100.0, data.get("value"));
         assertEquals("test", data.get("description"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
+        assertNotNull(data.get("recurrentTransactionId"));
     }
 
     @Test

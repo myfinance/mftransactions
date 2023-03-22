@@ -3,12 +3,7 @@ package de.hf.myfinance.transaction.events.in;
 import de.hf.framework.audit.AuditService;
 import de.hf.framework.audit.Severity;
 import de.hf.myfinance.event.Event;
-import de.hf.myfinance.restmodel.Instrument;
-import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
-import de.hf.myfinance.transaction.persistence.InstrumentMapper;
-import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
-import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
 
 import de.hf.myfinance.transaction.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
