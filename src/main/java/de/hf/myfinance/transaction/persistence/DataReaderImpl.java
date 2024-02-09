@@ -47,7 +47,7 @@ public class DataReaderImpl implements DataReader{
     }
 
     @Override
-    public Mono<Transaction> findTransactiondateById(String id) {
+    public Mono<Transaction> findTransactionById(String id) {
         return transactionRepository.findById(id).map(transactionMapper::entityToApi);
     }
 
@@ -70,4 +70,5 @@ public class DataReaderImpl implements DataReader{
         return recurrentTransactionRepository.findByFirstInstrumentBusinessKeyOrSecondInstrumentBusinessKey(businesskey, businesskey)
                 .map(recurrentTransactionMapper::entityToApi);
     }
+
 }

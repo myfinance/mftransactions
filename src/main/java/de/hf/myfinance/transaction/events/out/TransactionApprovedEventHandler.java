@@ -26,7 +26,7 @@ public class TransactionApprovedEventHandler {
 
     public void sendDeleteTransactionEvent(Transaction transaction){
         sendMessage("transactionApproved-out-0",
-                new Event<>(DELETE, "transactionPartition", transaction));
+                new Event<>(DELETE, transaction.getTransactionId(), transaction));
     }
 
     private void sendMessage(String bindingName, Event<String, Transaction> event) {

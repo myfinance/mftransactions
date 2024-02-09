@@ -35,6 +35,10 @@ public class TransactionService {
         return transactionHandlerFactory.listTransactions(startDate, endDate);
     }
 
+    public Mono<Transaction> getTransaction(String transactionId) {
+        return transactionHandlerFactory.getTransaction(transactionId);
+    }
+
     public Flux<RecurrentTransaction> listRecurrentTransactions() {
         return recurrentTransactionHandler.listRecurrentTransactions();
     }

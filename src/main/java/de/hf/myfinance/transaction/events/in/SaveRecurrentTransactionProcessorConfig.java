@@ -34,7 +34,7 @@ public class SaveRecurrentTransactionProcessorConfig {
     @Bean
     public Consumer<Event<String, RecurrentTransaction>> saveRecurrentTransactionProcessor() {
         return event -> {
-            auditService.saveMessage("Process message created at " + event.getEventCreatedAt(), Severity.INFO, AUDIT_MSG_TYPE);
+            auditService.saveMessage("Process message in SaveRecurrentTransactionProcessorConfig created at:" + event.getEventCreatedAt(), Severity.DEBUG, AUDIT_MSG_TYPE);
 
             if (event.getEventType() == Event.Type.CREATE) {
                 var recurrentTransactionEntity = recurrentTransactionMapper.apiToEntity(event.getData());
@@ -74,7 +74,7 @@ public class SaveRecurrentTransactionProcessorConfig {
                 auditService.saveMessage(errorMessage, Severity.WARN, AUDIT_MSG_TYPE);
             }
 
-            auditService.saveMessage("Message processing done!", Severity.INFO, AUDIT_MSG_TYPE);
+            auditService.saveMessage("Message processing in SaveRecurrentTransactionProcessorConfig done!", Severity.DEBUG, AUDIT_MSG_TYPE);
         };
     }
 }

@@ -10,6 +10,7 @@ import de.hf.myfinance.transaction.service.TransactionEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
@@ -37,5 +38,9 @@ public class TransactionHandlerFactory {
 
     public Flux<Transaction> listTransactions(LocalDate startDate, LocalDate endDate) {
         return transactionEnvironment.getDataReader().findTransactiondateBetween(startDate, endDate);
+    }
+
+    public Mono<Transaction> getTransaction(String transactionId) {
+        return transactionEnvironment.getDataReader().findTransactionById(transactionId);
     }
 }

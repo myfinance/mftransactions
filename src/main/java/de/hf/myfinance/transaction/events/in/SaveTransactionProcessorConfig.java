@@ -1,11 +1,13 @@
 package de.hf.myfinance.transaction.events.in;
 
 import de.hf.framework.audit.AuditService;
+import de.hf.framework.audit.AuditType;
 import de.hf.framework.audit.Severity;
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.persistence.TransactionMapper;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +32,7 @@ public class SaveTransactionProcessorConfig {
     @Bean
     public Consumer<Event<String, Transaction>> saveTransactionProcessor() {
         return event -> {
-            auditService.saveMessage("Process message created at "+ event.getEventCreatedAt(), Severity.INFO, AUDIT_MSG_TYPE);
+            auditService.saveMessage("Process message in SaveTransactionProcessorConfig created at:" + event.getEventCreatedAt(), Severity.DEBUG, AUDIT_MSG_TYPE);
             Transaction transaction = event.getData();
 
             switch (event.getEventType()) {
@@ -38,19 +40,19 @@ public class SaveTransactionProcessorConfig {
                 case CREATE:
                     var transactionEntity = transactionMapper.apiToEntity(transaction);
                     transactionRepository.save(transactionEntity).block();
-                    auditService.saveMessage("transaction saved:"+ transaction , Severity.INFO, AUDIT_MSG_TYPE);
+                    auditService.saveMessage("transaction saved:"+ transaction , Severity.INFO, AUDIT_MSG_TYPE, "NA", AuditType.TRANSACTIONEVENT);
 
                     break;
 
                 case DELETE:
                     transactionRepository.deleteById(transaction.getTransactionId()).block();
-                    auditService.saveMessage("transaction deleted:"+ transaction , Severity.INFO, AUDIT_MSG_TYPE);
+                    auditService.saveMessage("transaction deleted:"+ transaction , Severity.INFO, AUDIT_MSG_TYPE, "NA", AuditType.TRANSACTIONEVENT);
 
                     break;
 
                 default:
                     String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE event";
-                    auditService.saveMessage(errorMessage , Severity.ERROR, AUDIT_MSG_TYPE);
+                    auditService.saveMessage(errorMessage, Severity.ERROR, AUDIT_MSG_TYPE);
             }
         };
     }

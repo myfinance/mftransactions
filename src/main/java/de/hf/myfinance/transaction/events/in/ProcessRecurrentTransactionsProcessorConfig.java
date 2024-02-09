@@ -27,7 +27,7 @@ public class ProcessRecurrentTransactionsProcessorConfig {
     @Bean
     public Consumer<Event<String, RecurrentTransaction>> processRecurrentTransactionsProcessor() {
         return event -> {
-            auditService.saveMessage("Process message created at "+ event.getEventCreatedAt(), Severity.INFO, AUDIT_MSG_TYPE);
+            auditService.saveMessage("Process message in ProcessRecurrentTransactionsProcessorConfig created at:" + event.getEventCreatedAt(), Severity.DEBUG, AUDIT_MSG_TYPE);
 
             switch (event.getEventType()) {
 
@@ -37,11 +37,10 @@ public class ProcessRecurrentTransactionsProcessorConfig {
 
                 default:
                     String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a Start event";
-                    auditService.saveMessage(errorMessage, Severity.WARN, AUDIT_MSG_TYPE);
+                    auditService.saveMessage(errorMessage, Severity.FATAL, AUDIT_MSG_TYPE);
             }
 
-            auditService.saveMessage("Message processing done!", Severity.INFO, AUDIT_MSG_TYPE);
-
+            auditService.saveMessage("Message processing in ProcessRecurrentTransactionsProcessorConfig done!", Severity.DEBUG, AUDIT_MSG_TYPE);
         };
     }
 

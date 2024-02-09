@@ -72,7 +72,7 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
 
     protected Mono<String> validateExistingTransaction(String msg){
         if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()) {
-            return this.transactionEnvironment.getDataReader().findTransactiondateById(transaction.getTransactionId())
+            return this.transactionEnvironment.getDataReader().findTransactionById(transaction.getTransactionId())
                     .switchIfEmpty(handleNotExistingTransaction()).flatMap(i-> Mono.just("Update approved"));
         }
         return Mono.just(msg);

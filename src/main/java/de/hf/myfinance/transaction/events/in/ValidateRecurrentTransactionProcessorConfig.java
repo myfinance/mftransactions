@@ -27,17 +27,17 @@ public class ValidateRecurrentTransactionProcessorConfig {
     @Bean
     public Consumer<Event<String, RecurrentTransaction>> validateRecurrentTransactionProcessor() {
         return event -> {
-            auditService.saveMessage("Process message created at " + event.getEventCreatedAt(), Severity.INFO, AUDIT_MSG_TYPE);
+            auditService.saveMessage("Process message in ValidateRecurrentTransactionProcessorConfig created at:" + event.getEventCreatedAt(), Severity.DEBUG, AUDIT_MSG_TYPE);
 
             if (event.getEventType() == Event.Type.CREATE) {
                 RecurrentTransaction recurrentTransaction = event.getData();
                 transactionService.validateRecurrentTransaction(recurrentTransaction).block();
             } else {
                 String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE event";
-                auditService.saveMessage(errorMessage, Severity.WARN, AUDIT_MSG_TYPE);
+                auditService.saveMessage(errorMessage, Severity.ERROR, AUDIT_MSG_TYPE);
             }
 
-            auditService.saveMessage("Message processing done!", Severity.INFO, AUDIT_MSG_TYPE);
+            auditService.saveMessage("Message processing in ValidateRecurrentTransactionProcessorConfig done!", Severity.DEBUG, AUDIT_MSG_TYPE);
 
         };
     }

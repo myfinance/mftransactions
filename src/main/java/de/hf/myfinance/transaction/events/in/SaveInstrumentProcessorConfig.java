@@ -1,5 +1,7 @@
 package de.hf.myfinance.transaction.events.in;
 
+import de.hf.framework.audit.AuditService;
+import de.hf.framework.audit.Severity;
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.Instrument;
 import de.hf.myfinance.restmodel.InstrumentType;
@@ -9,8 +11,6 @@ import de.hf.myfinance.transaction.persistence.DataReader;
 import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
 import de.hf.myfinance.transaction.persistence.InstrumentMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,31 +22,32 @@ import java.util.function.Consumer;
 @Configuration
 public class SaveInstrumentProcessorConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SaveInstrumentProcessorConfig.class);
 
     private final InstrumentMapper instrumentMapper;
     private final InstrumentRepository instrumentRepository;
     private final RecurrentTransactionApprovedEventHandler recurrentTransactionApprovedEventHandler;
     private final DataReader dataReader;
+    private final AuditService auditService;
+    protected static final String AUDIT_MSG_TYPE="SaveInstrumentProcessorConfig_Event";
 
     @Autowired
-    public SaveInstrumentProcessorConfig(InstrumentMapper instrumentMapper, InstrumentRepository instrumentRepository, DataReader dataReader, RecurrentTransactionApprovedEventHandler recurrentTransactionApprovedEventHandler) {
+    public SaveInstrumentProcessorConfig(AuditService auditService, InstrumentMapper instrumentMapper, InstrumentRepository instrumentRepository, DataReader dataReader, RecurrentTransactionApprovedEventHandler recurrentTransactionApprovedEventHandler) {
         this.instrumentMapper = instrumentMapper;
         this.instrumentRepository = instrumentRepository;
         this.dataReader = dataReader;
         this.recurrentTransactionApprovedEventHandler = recurrentTransactionApprovedEventHandler;
+        this.auditService = auditService;
     }
 
     @Bean
     public Consumer<Event<String, Instrument>> saveInstrumentProcessor() {
         return event -> {
-            LOG.info("Process message created at {}...", event.getEventCreatedAt());
+            auditService.saveMessage("Process message in SaveInstrumentProcessorConfig created at:" + event.getEventCreatedAt(), Severity.DEBUG, AUDIT_MSG_TYPE);
 
             switch (event.getEventType()) {
 
                 case CREATE:
                     Instrument instrument = event.getData();
-                    LOG.info("Create instrument with ID: {}", instrument.getBusinesskey());
                     if(instrument.getInstrumentType().equals(InstrumentType.BUDGET) || instrument.getInstrumentType().equals(InstrumentType.GIRO)){
                         var instrumentEntity = map2entity(instrument);
                         instrumentRepository.deleteByBusinesskey(instrumentEntity.getBusinesskey()).then(instrumentRepository.save(instrumentEntity)).block();
@@ -58,10 +59,10 @@ public class SaveInstrumentProcessorConfig {
 
                 default:
                     String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE event";
-                    LOG.warn(errorMessage);
+                    auditService.saveMessage(errorMessage, Severity.FATAL, AUDIT_MSG_TYPE);
             }
 
-            LOG.info("Message processing done!");
+            auditService.saveMessage("Message processing in SaveInstrumentProcessorConfig done!", Severity.DEBUG, AUDIT_MSG_TYPE);
 
         };
     }
