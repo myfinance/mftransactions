@@ -62,6 +62,10 @@ spring.cloud.stream:
     destination: processRecurrentTransactions
     producer:
       required-groups: processRecurrentTransactionsAuditGroup
+  bindings.mflog-out-0:
+    destination: logStream
+    producer:
+      required-groups: mflogauditGroup      
 
 spring.cloud.stream.bindings.validateTransactionProcessor-in-0.consumer:
   maxAttempts: 3

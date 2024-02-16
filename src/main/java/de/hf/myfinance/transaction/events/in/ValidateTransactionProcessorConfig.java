@@ -36,7 +36,7 @@ public class ValidateTransactionProcessorConfig {
                 Transaction transaction = event.getData();
                 transactionService.validateTransaction(transaction).block();
             } 
-            if (Objects.requireNonNull(event.getEventType()) == Event.Type.DELETE) {
+            else if (Objects.requireNonNull(event.getEventType()) == Event.Type.DELETE) {
                 String transactionId = event.getKey();
                 var transaction = transactionService.getTransaction(transactionId).block();
                 eventHandler.sendDeleteTransactionEvent(transaction);
