@@ -1,11 +1,9 @@
 package de.hf.myfinance.transaction.persistence.entities;
 
-import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.restmodel.Trade;
 import de.hf.myfinance.restmodel.TransactionType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;

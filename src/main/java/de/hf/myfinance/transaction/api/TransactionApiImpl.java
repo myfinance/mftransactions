@@ -2,6 +2,7 @@ package de.hf.myfinance.transaction.api;
 
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restapi.TransactionApi;
+import de.hf.myfinance.restmodel.Cashflow;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.TransactionService;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static de.hf.myfinance.event.Event.Type.*;
 
@@ -110,6 +112,16 @@ public class TransactionApiImpl implements TransactionApi {
                 .setHeader("partitionKey", event.getKey())
                 .build();
         streamBridge.send(bindingName, message);
+    }
+
+    @Override
+    public Mono<Double> getAvgExpensesOfLastYear(String businesskey) {
+        return transactionService.getAvgExpensesOfLastYear(businesskey);
+    }
+
+    @Override
+    public Flux<Cashflow> listCashflows4Instrument(String businesskey, LocalDate startDate, LocalDate endDate) {
+        return transactionService.listInstrumentCashflows(businesskey, startDate, endDate);
     }
 
 }
