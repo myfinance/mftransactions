@@ -2,7 +2,9 @@ package de.hf.myfinance.transaction;
 
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.restmodel.*;
+import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import de.hf.myfinance.transaction.persistence.entities.RecurrentTransactionEntity;
+import de.hf.myfinance.transaction.persistence.entities.TransactionEntity;
 import de.hf.myfinance.transaction.service.TransactionService;
 import de.hf.testhelper.JsonHelper;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -285,5 +286,70 @@ class TransactionServiceTest extends EventProcessorTestBase{
             transactionmono.block();
         });
     }
+
+    @Test
+    void getAvgExpensesOfLastYear_noExpenses() {
+        initDb();
+
+        var desc = "testeinkommen";
+        LocalDate transactionDate = LocalDate.of(LocalDate.now().getYear(), 1, 2);
+        var transaction = new TransactionEntity(desc, transactionDate, TransactionType.INCOME);
+        var cashflows = new HashMap<String, Double>();
+        cashflows.put(inactivebgtKey, 100.0);
+        cashflows.put(giroKey, 100.0);
+        transaction.setCashflows(cashflows);
+
+        transactionRepository.save(transaction).block();
+
+
+        var avgExpenses = transactionService.getAvgExpensesOfLastYear(giroKey).block();
+        assertEquals(0, avgExpenses);
+    }
+
+    @Test
+    void getAvgExpensesOfLastYear_singleExpenses() {
+        initDb();
+
+        var desc = "testeinkommen";
+        LocalDate transactionDate = LocalDate.of(LocalDate.now().getYear(), 1, 2);
+        var transaction = new TransactionEntity(desc, transactionDate, TransactionType.EXPENSE);
+        var cashflows = new HashMap<String, Double>();
+        cashflows.put(inactivebgtKey, -120.0);
+        cashflows.put(giroKey, -120.0);
+        transaction.setCashflows(cashflows);
+
+        transactionRepository.save(transaction).block();
+
+
+        var avgExpenses = transactionService.getAvgExpensesOfLastYear(giroKey).block();
+        assertEquals(-10, avgExpenses);
+    }
+
+    @Test
+    void listInstrumentCashflows() {
+        initDb();
+
+        var desc = "testeinkommen";
+        LocalDate transactionDate = LocalDate.of(2024, 1, 2);
+        var transaction = new TransactionEntity(desc, transactionDate, TransactionType.INCOME);
+        var cashflows = new HashMap<String, Double>();
+        cashflows.put(inactivebgtKey, 100.0);
+        cashflows.put(giroKey, 100.0);
+        transaction.setCashflows(cashflows);
+        transactionRepository.save(transaction).block();
+
+        desc = "testausgabe";
+        transaction = new TransactionEntity(desc, transactionDate, TransactionType.EXPENSE);
+        cashflows = new HashMap<String, Double>();
+        cashflows.put(inactivebgtKey, -10.0);
+        cashflows.put(giroKey, -10.0);
+        transaction.setCashflows(cashflows);
+        transactionRepository.save(transaction).block();
+
+
+        var result = transactionService.listInstrumentCashflows(giroKey, transactionDate.minusDays(1), transactionDate.plusDays(1)).collectList().block();
+        assertEquals(2, result.size());
+    }
+
 
 }
