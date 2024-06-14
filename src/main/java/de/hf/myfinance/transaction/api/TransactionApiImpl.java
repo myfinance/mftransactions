@@ -20,7 +20,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import static de.hf.myfinance.event.Event.Type.*;
 

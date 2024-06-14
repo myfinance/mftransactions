@@ -42,7 +42,8 @@ public class DataReaderImpl implements DataReader{
 
     @Override
     public Flux<Transaction> findTransactiondateBetween(LocalDate startDate, LocalDate endDate) {
-        return transactionRepository.findByTransactiondateBetween(startDate, endDate)
+        // reduce the startdate by 1 and add a day to the enddate to include start and enddate in the search
+        return transactionRepository.findByTransactiondateBetween(startDate.plusDays(-1), endDate.plusDays(1))
                 .map(transactionMapper::entityToApi);
     }
 
