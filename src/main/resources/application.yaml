@@ -68,7 +68,7 @@ spring.cloud.stream:
       required-groups: mflogauditGroup      
 
 spring.cloud.stream.bindings.validateTransactionProcessor-in-0.consumer:
-  maxAttempts: 3
+  maxAttempts: 1
   backOffInitialInterval: 500
   backOffMaxInterval: 1000
   backOffMultiplier: 2.0

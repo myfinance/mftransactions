@@ -1,6 +1,7 @@
 package de.hf.myfinance.transaction.events.in;
 
 import de.hf.framework.audit.AuditService;
+import de.hf.framework.audit.AuditType;
 import de.hf.framework.audit.Severity;
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.event.Event;
@@ -41,7 +42,7 @@ public class SaveRecurrentTransactionProcessorConfig {
 
                 if(recurrentTransactionEntity.getRecurrentTransactionId()==null) {
                     recurrentTransactionRepository.save(recurrentTransactionEntity).block();
-                    auditService.saveMessage("recurrentTransaction inserted:" + recurrentTransactionEntity, Severity.INFO, AUDIT_MSG_TYPE);
+                    auditService.saveMessage("recurrentTransaction inserted:" + recurrentTransactionEntity, Severity.INFO, AUDIT_MSG_TYPE, "NA", AuditType.RECURRENTTRANSACTIONEVENT);
                 } else {
                     recurrentTransactionRepository.findById(recurrentTransactionEntity.getRecurrentTransactionId())
                             .switchIfEmpty(Mono.error(new MFException(MFMsgKey.NO_VALID_RECURRENTTRANSACTION, " id not found:"+ recurrentTransactionEntity.getRecurrentTransactionId())))
@@ -56,9 +57,9 @@ public class SaveRecurrentTransactionProcessorConfig {
                                 })
                             .flatMap(recurrentTransactionRepository::save)
                             .block();
-                    auditService.saveMessage("recurrentTransaction updated:" + recurrentTransactionEntity, Severity.INFO, AUDIT_MSG_TYPE);
+                    auditService.saveMessage("recurrentTransaction updated:"+ recurrentTransactionEntity , Severity.INFO, AUDIT_MSG_TYPE, "NA", AuditType.RECURRENTTRANSACTIONEVENT);
                 }
-            } if (event.getEventType() == Event.Type.DELETE) {
+            } else if (event.getEventType() == Event.Type.DELETE) {
                 var recurrentTransactionEntity = recurrentTransactionMapper.apiToEntity(event.getData());
                 if(recurrentTransactionEntity.getRecurrentTransactionId()==null || recurrentTransactionEntity.getRecurrentTransactionId().isEmpty()) {
                     auditService.throwException("RecurrenttransactionID is empty.", AUDIT_MSG_TYPE, MFMsgKey.ILLEGAL_ARGUMENTS);
@@ -67,7 +68,7 @@ public class SaveRecurrentTransactionProcessorConfig {
                             .switchIfEmpty(auditService.handleMonoError("Recurrenttransaction not found for id:"+recurrentTransactionEntity.getRecurrentTransactionId(), AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransactionEntity.class))
                             .flatMap(recurrentTransactionRepository::delete)
                             .block();
-                    auditService.saveMessage("recurrentTransaction updated:" + recurrentTransactionEntity, Severity.INFO, AUDIT_MSG_TYPE);
+                    auditService.saveMessage("recurrentTransaction updated:" + recurrentTransactionEntity, Severity.INFO, AUDIT_MSG_TYPE, "NA", AuditType.RECURRENTTRANSACTIONEVENT);
                 }
             } else {
                 String errorMessage = "Incorrect event type: " + event.getEventType() + ", expected a CREATE event";

@@ -119,8 +119,11 @@ public class RecurrentTransactionHandler {
     }
 
     private Mono<RecurrentTransaction> validateNextTransactionDate(RecurrentTransaction recurrentTransaction){
-        if(!recurrentTransaction.getNextTransactionDate().isAfter(LocalDate.now())) {
+        /*if(!recurrentTransaction.getNextTransactionDate().isAfter(LocalDate.now())) {
             return auditService.handleMonoError("nextTransactionDate is in the past", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
+        }*/
+        if(recurrentTransaction.getNextTransactionDate()==null) {
+            return auditService.handleMonoError("nextTransactionDate is in set", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
         }
         return Mono.just(recurrentTransaction);
     }
