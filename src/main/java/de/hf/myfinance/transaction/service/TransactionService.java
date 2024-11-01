@@ -5,7 +5,6 @@ import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.handler.RecurrentTransactionHandler;
 import de.hf.myfinance.transaction.service.handler.TransactionHandlerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,8 +26,9 @@ public class TransactionService {
         return recurrentTransactionHandler.validateRecurrentTransaction(recurrentTransaction);
     }
 
-    public Mono<Transaction> validateTransaction(Transaction transaction) {
-        return transactionHandlerFactory.createTransactionHandler(transaction).validate();
+    public Mono<String> validateTransaction(Transaction transaction) {
+        return transactionHandlerFactory.createTransactionHandler(transaction).validate()
+        .flatMap(s -> Mono.just(s)).flatMap(t->Mono.just(t.getTransactionId().toString()));
     }
 
     public Flux<Transaction> listTransactions(LocalDate startDate, LocalDate endDate) {

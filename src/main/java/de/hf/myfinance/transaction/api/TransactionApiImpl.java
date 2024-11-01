@@ -34,7 +34,6 @@ public class TransactionApiImpl implements TransactionApi {
     private final StreamBridge streamBridge;
     private final Scheduler publishEventScheduler;
 
-    @Autowired
     public TransactionApiImpl(ServiceUtil serviceUtil, TransactionService transactionService, StreamBridge streamBridge, @Qualifier("publishEventScheduler") Scheduler publishEventScheduler) {
         this.serviceUtil = serviceUtil;
         this.transactionService = transactionService;
