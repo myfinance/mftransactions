@@ -28,7 +28,7 @@ public class TransactionService {
 
     public Mono<String> validateTransaction(Transaction transaction) {
         return transactionHandlerFactory.createTransactionHandler(transaction).validate()
-        .flatMap(s -> Mono.just(s)).flatMap(t->Mono.just(t.getTransactionId().toString()));
+        .flatMap(s -> Mono.just(s)).flatMap(t->Mono.just("success"));
     }
 
     public Flux<Transaction> listTransactions(LocalDate startDate, LocalDate endDate) {
