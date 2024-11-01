@@ -8,7 +8,6 @@ import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.persistence.TransactionMapper;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,7 +21,6 @@ public class SaveTransactionProcessorConfig {
     private final TransactionRepository transactionRepository;
     protected static final String AUDIT_MSG_TYPE="SaveTransactionProcessor_Event";
 
-    @Autowired
     public SaveTransactionProcessorConfig(TransactionMapper transactionMapper, AuditService auditService, TransactionRepository transactionRepository) {
         this.transactionMapper = transactionMapper;
         this.auditService = auditService;

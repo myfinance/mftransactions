@@ -4,7 +4,6 @@ import de.hf.framework.audit.Severity;
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.Instrument;
-import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
 import reactor.core.publisher.Mono;
@@ -24,20 +23,26 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         this.transaction = transaction;
     }
 
-    public Mono<String> validate() {
+    public Mono<Transaction> validate() {
         validateTransactionDate(transaction.getTransactiondate());
         validateTransactionDesc(transaction.getDescription());
-        validateTransactionId();
-        return validateCashflows(transaction.getCashflows())
-                .flatMap(this::validateExistingTransaction);
+        return validateTransactionId(transaction)
+            .flatMap(this::validateCashflows)
+            .flatMap(this::additionalValidation)
+            .flatMap(this::saveTransaction);
     }
 
-    protected Mono<String> validateCashflows(Map<String, Double> cashflows){
+    protected Mono<Transaction> additionalValidation(Transaction transaction){
+        return Mono.just(transaction);
+    }
+
+    protected Mono<Transaction> validateCashflows(Transaction transaction){
+        var cashflows = transaction.getCashflows();
         validateCashflowNumber(cashflows);
         validateCashflowValue(cashflows);
         return this.transactionEnvironment.getDataReader().findInstrumentByBusinesskeyIn(cashflows.keySet())
                 .collectList().flatMap(this::validateInstruments)
-                .flatMap(this::saveTransaction);
+                .flatMap(i->Mono.just(transaction));
     }
 
     protected void validateTransactionDate(LocalDate transactiondate) {
@@ -69,31 +74,16 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
             }
         });
     }
-
-    protected Mono<String> validateExistingTransaction(String msg){
-        if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()) {
-            return this.transactionEnvironment.getDataReader().findTransactionById(transaction.getTransactionId())
-                    .switchIfEmpty(handleNotExistingTransaction()).flatMap(i-> Mono.just("Update approved"));
-        }
-        return Mono.just(msg);
-
-    }
-
-    private Mono<Transaction> handleNotExistingTransaction(){
-        return Mono.error(new MFException(MFMsgKey.UNKNOWN_TRANSACTION_EXCEPTION, "No transaction for this transactionId available:"+transaction.getTransactionId()));
-    }
-
-    protected Mono<String> saveTransaction(String msg) {
-        msg = "new transaction approved:" + transaction;
+    
+    protected Mono<Transaction> saveTransaction(Transaction transaction) {
         if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()){
-            msg = "transaction update approved:" + transaction;
             transactionEnvironment.getAuditService().saveMessage(transaction+" deleted: " + transaction, Severity.INFO, AUDIT_MSG_TYPE);
             transactionEnvironment.getEventHandler().sendDeleteTransactionEvent(transaction);
             transaction.setTransactionId(null);
         }
         transactionEnvironment.getAuditService().saveMessage(transaction+" inserted: " + transaction, Severity.INFO, AUDIT_MSG_TYPE);
         transactionEnvironment.getEventHandler().sendTransactionApprovedEvent(transaction);
-        return Mono.just(msg);
+        return Mono.just(transaction);
     }
 
     protected void validateCashflowNumber(Map<String, Double> cashflows) {
@@ -109,10 +99,19 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         }
     }
 
-    protected void validateTransactionId(){
+    protected Mono<Transaction> validateTransactionId(Transaction transaction){
         if(transaction.getTransactionId() != null && transaction.getTransactionId().trim().isEmpty()) {
             transaction.setTransactionId(null);
         }
+        if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()) {
+            return this.transactionEnvironment.getDataReader().findTransactionById(transaction.getTransactionId())
+                    .switchIfEmpty(handleNotExistingTransaction()).flatMap(i-> Mono.just(transaction));
+        }
+        return Mono.just(transaction);
+    }
+
+    private Mono<Transaction> handleNotExistingTransaction(){
+        return Mono.error(new MFException(MFMsgKey.UNKNOWN_TRANSACTION_EXCEPTION, "No transaction for this transactionId available:"+transaction.getTransactionId()));
     }
 
     protected void validateInstrumentNumber(List<Instrument> instruments) {

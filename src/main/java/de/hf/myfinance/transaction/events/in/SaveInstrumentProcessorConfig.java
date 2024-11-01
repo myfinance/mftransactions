@@ -5,6 +5,7 @@ import de.hf.framework.audit.Severity;
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.Instrument;
 import de.hf.myfinance.restmodel.InstrumentType;
+import de.hf.myfinance.restmodel.InstrumentTypeGroup;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.transaction.events.out.RecurrentTransactionApprovedEventHandler;
 import de.hf.myfinance.transaction.persistence.DataReader;
@@ -48,7 +49,10 @@ public class SaveInstrumentProcessorConfig {
 
                 case CREATE:
                     Instrument instrument = event.getData();
-                    if(instrument.getInstrumentType().equals(InstrumentType.BUDGET) || instrument.getInstrumentType().equals(InstrumentType.GIRO)){
+                    if(instrument.getInstrumentType().equals(InstrumentType.BUDGET) 
+                        || instrument.getInstrumentType().equals(InstrumentType.GIRO)
+                        || instrument.getInstrumentType().equals(InstrumentType.DEPOT)
+                        || instrument.getInstrumentType().getTypeGroup().equals(InstrumentTypeGroup.SECURITY)){
                         var instrumentEntity = map2entity(instrument);
                         instrumentRepository.deleteByBusinesskey(instrumentEntity.getBusinesskey()).then(instrumentRepository.save(instrumentEntity)).block();
                         if(!instrument.isActive()) {

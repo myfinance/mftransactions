@@ -22,15 +22,19 @@ public class IncomeExpensesHandler extends AbsTransactionHandler{
 
     @Override
     protected void validateCashflowValue(Map<String, Double> cashflows) {
+        this.validateCashflowValueGeneric(cashflows, TransactionType.INCOME, TransactionType.EXPENSE);
+    }
+
+    protected void validateCashflowValueGeneric(Map<String, Double> cashflows, TransactionType posTransactionType, TransactionType negTransactionType) {
         var values = cashflows.values().stream().toList();
         if(!values.get(0).equals(values.get(1))) {
             throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " value of cashflows not equal:"+ cashflows);
         }
-        if(transaction.getTransactionType().equals(TransactionType.INCOME) && values.get(0) < 0) {
-            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " negative values for income not allowed:"+ cashflows);
+        if(transaction.getTransactionType().equals(posTransactionType) && values.get(0) < 0) {
+            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " negative values for "+posTransactionType.name()+" not allowed:"+ cashflows);
         }
-        if(transaction.getTransactionType().equals(TransactionType.EXPENSE) && values.get(0) > 0) {
-            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " positive values for expense not allowed:"+ cashflows);
+        if(transaction.getTransactionType().equals(negTransactionType) && values.get(0) > 0) {
+            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " positive values for "+negTransactionType.name()+" not allowed:"+ cashflows);
         }
     }
 
@@ -39,7 +43,7 @@ public class IncomeExpensesHandler extends AbsTransactionHandler{
         setInstrument(instruments.get(0));
         setInstrument(instruments.get(1));
         if(giro==null || budget==null) {
-            throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttypes for incomeExpenses");
+            throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttypes for "+this.getClass().getName());
         }
     }
 

@@ -3,6 +3,7 @@ package de.hf.myfinance.transaction;
 import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
+import de.hf.myfinance.transaction.persistence.repositories.PositionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.RecurrentTransactionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
 import de.hf.testhelper.MongoDbTestBase;
@@ -28,7 +29,8 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     InstrumentRepository instrumentRepository;
     @Autowired
     TransactionRepository transactionRepository;
-
+    @Autowired
+    PositionRepository positionRepository;
     @Autowired
     RecurrentTransactionRepository recurrentTransactionRepository;
 
@@ -51,6 +53,8 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     String bgt2Key = bgt2desc+"@10";
     String giro2Key = "newGiro2@1";
     String giroOtherTenantKey = "newOtherTenantGiro2@1";
+    String depotKey = "depot@11";
+    String equityKey = "equity@14";
 
     String inactivebgtKey = "inactivebudget@10";
 
@@ -59,6 +63,7 @@ public class EventProcessorTestBase extends MongoDbTestBase {
         instrumentRepository.deleteAll().block();
         transactionRepository.deleteAll().block();
         recurrentTransactionRepository.deleteAll().block();
+        positionRepository.deleteAll().block();
         purgeMessages(transactionApprovedBindingName);
         purgeMessages(recurrentTransactionApprovedBindingName);
         purgeMessages(validateTransactionBindingName);
@@ -117,5 +122,13 @@ public class EventProcessorTestBase extends MongoDbTestBase {
         var inactivebudget = new InstrumentEntity(inactivebgtKey, InstrumentType.BUDGET, false);
         inactivebudget.setTenantBusinesskey(tenantKey);
         instrumentRepository.save(inactivebudget).block();
+
+        var depot = new InstrumentEntity(depotKey, InstrumentType.GIRO, true);
+        depot.setTenantBusinesskey(tenantKey);
+        instrumentRepository.save(depot).block();
+
+        var equity = new InstrumentEntity(equityKey, InstrumentType.EQUITY, true);
+        equity.setTenantBusinesskey(tenantKey);
+        instrumentRepository.save(equity).block();
     }
 }

@@ -18,7 +18,6 @@ public class TransactionService {
     private final TransactionHandlerFactory transactionHandlerFactory;
     private final RecurrentTransactionHandler recurrentTransactionHandler;
 
-    @Autowired
     public TransactionService(TransactionHandlerFactory transactionHandlerFactory, RecurrentTransactionHandler recurrentTransactionHandler){
         this.transactionHandlerFactory = transactionHandlerFactory;
         this.recurrentTransactionHandler = recurrentTransactionHandler;
@@ -28,7 +27,7 @@ public class TransactionService {
         return recurrentTransactionHandler.validateRecurrentTransaction(recurrentTransaction);
     }
 
-    public Mono<String> validateTransaction(Transaction transaction) {
+    public Mono<Transaction> validateTransaction(Transaction transaction) {
         return transactionHandlerFactory.createTransactionHandler(transaction).validate();
     }
 

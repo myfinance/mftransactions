@@ -7,7 +7,6 @@ import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.events.out.TransactionApprovedEventHandler;
 import de.hf.myfinance.transaction.persistence.DataReader;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,7 +17,6 @@ import java.time.LocalDate;
 public class TransactionHandlerFactory {
     private final TransactionEnvironment transactionEnvironment;
 
-    @Autowired
     public TransactionHandlerFactory(DataReader dataReader, AuditService auditService, TransactionApprovedEventHandler eventHandler) {
         transactionEnvironment = new TransactionEnvironment(dataReader, auditService, eventHandler);
     }
@@ -27,6 +25,8 @@ public class TransactionHandlerFactory {
         switch(transaction.getTransactionType()){
             case INCOME, EXPENSE:
                 return new IncomeExpensesHandler(transactionEnvironment, transaction);
+            case BUY, SELL:
+                return new TradeHandler(transactionEnvironment, transaction);
             case TRANSFER:
                 return new TransferHandler(transactionEnvironment, transaction);
             case BUDGETTRANSFER:

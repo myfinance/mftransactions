@@ -1,9 +1,12 @@
 package de.hf.myfinance.transaction.persistence;
 
 import de.hf.myfinance.restmodel.Instrument;
+import de.hf.myfinance.restmodel.Position;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
+import de.hf.myfinance.transaction.persistence.entities.PositionKey;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
+import de.hf.myfinance.transaction.persistence.repositories.PositionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.RecurrentTransactionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +24,22 @@ public class DataReaderImpl implements DataReader{
     private final TransactionMapper transactionMapper;
     private final RecurrentTransactionMapper recurrentTransactionMapper;
     private final RecurrentTransactionRepository recurrentTransactionRepository;
+    private final PositionRepository positionRepository;
+    private final PositionMapper positonMapper;
 
-    @Autowired
     public DataReaderImpl(InstrumentRepository instrumentRepository, InstrumentMapper instrumentMapper,
                           TransactionRepository transactionRepository, TransactionMapper transactionMapper,
-                          RecurrentTransactionMapper recurrentTransactionMapper, RecurrentTransactionRepository recurrentTransactionRepository) {
+                          RecurrentTransactionMapper recurrentTransactionMapper, RecurrentTransactionRepository recurrentTransactionRepository, 
+                          PositionRepository positionRepository, PositionMapper positionMapper
+                          ) {
         this.instrumentRepository = instrumentRepository;
         this.instrumentMapper = instrumentMapper;
         this.transactionRepository = transactionRepository;
         this.transactionMapper = transactionMapper;
         this.recurrentTransactionMapper = recurrentTransactionMapper;
         this.recurrentTransactionRepository = recurrentTransactionRepository;
+        this.positionRepository = positionRepository;
+        this.positonMapper = positionMapper;
     }
 
     @Override
@@ -70,6 +78,12 @@ public class DataReaderImpl implements DataReader{
     public Flux<RecurrentTransaction> findRecurrentTransactionsByInstrument(String businesskey){
         return recurrentTransactionRepository.findByFirstInstrumentBusinessKeyOrSecondInstrumentBusinessKey(businesskey, businesskey)
                 .map(recurrentTransactionMapper::entityToApi);
+    }
+
+    @Override
+    public Mono<Position> findPositonByKey(String depotBusinessKey, String securityBusinessKey) {
+        var positionkey = new PositionKey(depotBusinessKey, securityBusinessKey);
+        return positionRepository.findByPositionKey(positionkey).map(positonMapper::entityToApi);
     }
 
 }

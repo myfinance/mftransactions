@@ -2,6 +2,7 @@ package de.hf.myfinance.transaction.persistence;
 
 
 import de.hf.myfinance.restmodel.Instrument;
+import de.hf.myfinance.restmodel.Position;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import reactor.core.publisher.Flux;
@@ -16,4 +17,5 @@ public interface DataReader {
     Mono<Instrument> findByBusinesskey(String businesskey);
     Flux<RecurrentTransaction> findRecurrentTransactions();
     Flux<RecurrentTransaction> findRecurrentTransactionsByInstrument(String businesskey);
+    Mono<Position> findPositonByKey(String depotBusinessKey, String securityBusinessKey);
 }
