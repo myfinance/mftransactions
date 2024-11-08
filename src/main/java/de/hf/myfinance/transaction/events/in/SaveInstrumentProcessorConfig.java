@@ -12,7 +12,6 @@ import de.hf.myfinance.transaction.persistence.DataReader;
 import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
 import de.hf.myfinance.transaction.persistence.InstrumentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
@@ -31,7 +30,6 @@ public class SaveInstrumentProcessorConfig {
     private final AuditService auditService;
     protected static final String AUDIT_MSG_TYPE="SaveInstrumentProcessorConfig_Event";
 
-    @Autowired
     public SaveInstrumentProcessorConfig(AuditService auditService, InstrumentMapper instrumentMapper, InstrumentRepository instrumentRepository, DataReader dataReader, RecurrentTransactionApprovedEventHandler recurrentTransactionApprovedEventHandler) {
         this.instrumentMapper = instrumentMapper;
         this.instrumentRepository = instrumentRepository;

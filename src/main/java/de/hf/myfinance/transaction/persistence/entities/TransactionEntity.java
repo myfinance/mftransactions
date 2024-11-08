@@ -1,6 +1,6 @@
 package de.hf.myfinance.transaction.persistence.entities;
 
-import de.hf.myfinance.restmodel.Position;
+import de.hf.myfinance.restmodel.Trade;
 import de.hf.myfinance.restmodel.TransactionType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -9,9 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Document(collection = "transactions")
 public class TransactionEntity  implements java.io.Serializable {
@@ -25,7 +23,7 @@ public class TransactionEntity  implements java.io.Serializable {
     private String description;
     private LocalDate transactiondate;
     private LocalDateTime lastchanged;
-    private Position tradeInfo;
+    private Trade tradeInfo;
     private Map<String, Double> cashflows = new HashMap<>(0);
     private TransactionType transactionType;
 
@@ -79,11 +77,11 @@ public class TransactionEntity  implements java.io.Serializable {
         this.lastchanged = lastchanged;
     }
 
-    public Position getTradeInfo() {
+    public Trade getTradeInfo() {
         return tradeInfo;
     }
 
-    public void setTradeInfo(Position tradeInfo) {
+    public void setTradeInfo(Trade tradeInfo) {
         this.tradeInfo = tradeInfo;
     }
 

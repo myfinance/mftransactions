@@ -3,7 +3,6 @@ package de.hf.myfinance.transaction;
 import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.transaction.persistence.entities.InstrumentEntity;
 import de.hf.myfinance.transaction.persistence.repositories.InstrumentRepository;
-import de.hf.myfinance.transaction.persistence.repositories.PositionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.RecurrentTransactionRepository;
 import de.hf.myfinance.transaction.persistence.repositories.TransactionRepository;
 import de.hf.testhelper.MongoDbTestBase;
@@ -29,8 +28,6 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     InstrumentRepository instrumentRepository;
     @Autowired
     TransactionRepository transactionRepository;
-    @Autowired
-    PositionRepository positionRepository;
     @Autowired
     RecurrentTransactionRepository recurrentTransactionRepository;
 
@@ -63,7 +60,6 @@ public class EventProcessorTestBase extends MongoDbTestBase {
         instrumentRepository.deleteAll().block();
         transactionRepository.deleteAll().block();
         recurrentTransactionRepository.deleteAll().block();
-        positionRepository.deleteAll().block();
         purgeMessages(transactionApprovedBindingName);
         purgeMessages(recurrentTransactionApprovedBindingName);
         purgeMessages(validateTransactionBindingName);

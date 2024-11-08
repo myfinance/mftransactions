@@ -2,8 +2,6 @@ package de.hf.myfinance.transaction;
 
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.restmodel.*;
-import de.hf.myfinance.transaction.persistence.entities.PositionEntity;
-import de.hf.myfinance.transaction.persistence.entities.PositionKey;
 import de.hf.myfinance.transaction.persistence.entities.RecurrentTransactionEntity;
 import de.hf.myfinance.transaction.persistence.entities.TransactionEntity;
 import de.hf.myfinance.transaction.service.TransactionService;
@@ -90,7 +88,7 @@ class TransactionServiceTest extends EventProcessorTestBase{
         cashflows.put(bgtKey, -100.0);
         cashflows.put(giroKey, -100.0);
         transaction.setCashflows(cashflows);
-        var tradeInfo = new Position(depotKey,equityKey, 10);
+        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
         transaction.setTradeInfo(tradeInfo);
         transactionService.validateTransaction(transaction).block();
 
@@ -109,14 +107,6 @@ class TransactionServiceTest extends EventProcessorTestBase{
     void createSell() {
         initDb();
 
-        var positon = new PositionEntity();
-        positon.setAmount(10);
-        var key = new PositionKey();
-        key.setDepotBusinessKey(depotKey);
-        key.setSecurityBusinessKey(equityKey);
-        positon.setPositionKey(key);
-        positionRepository.save(positon).block();
-
         var desc = "testsell";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.SELL);
@@ -124,7 +114,7 @@ class TransactionServiceTest extends EventProcessorTestBase{
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);
         transaction.setCashflows(cashflows);
-        var tradeInfo = new Position(depotKey,equityKey, 10);
+        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
         transaction.setTradeInfo(tradeInfo);
         transactionService.validateTransaction(transaction).block();
 
@@ -209,67 +199,10 @@ class TransactionServiceTest extends EventProcessorTestBase{
         });
     }
 
-    @Test
-    void createSellFailsDueToNoPosition() {
-        initDb();
-
-        var desc = "testsell";
-        LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.SELL);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-        var tradeInfo = new Position(depotKey,equityKey, 10);
-        transaction.setTradeInfo(tradeInfo);
-
-        var transactionmono = transactionService.validateTransaction(transaction);
-        assertThrows(MFException.class, () -> {
-            transactionmono.block();
-        });
-
-    }
-
-    @Test
-    void createSellFailsDueToPositionToLow() {
-        initDb();
-
-        var positon = new PositionEntity();
-        positon.setAmount(9);
-        var key = new PositionKey();
-        key.setDepotBusinessKey(depotKey);
-        key.setSecurityBusinessKey(equityKey);
-        positon.setPositionKey(key);
-        positionRepository.save(positon).block();
-
-        var desc = "testsell";
-        LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.SELL);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-        var tradeInfo = new Position(depotKey,equityKey, 10);
-        transaction.setTradeInfo(tradeInfo);
-
-        var transactionmono = transactionService.validateTransaction(transaction);
-        assertThrows(MFException.class, () -> {
-            transactionmono.block();
-        });
-
-    }
 
     @Test
     void createSellFailsDueToNegativeValue() {
         initDb();
-
-        var positon = new PositionEntity();
-        positon.setAmount(10);
-        var key = new PositionKey();
-        key.setDepotBusinessKey(depotKey);
-        key.setSecurityBusinessKey(equityKey);
-        positon.setPositionKey(key);
-        positionRepository.save(positon).block();
 
         var desc = "testsell";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
@@ -278,7 +211,7 @@ class TransactionServiceTest extends EventProcessorTestBase{
         cashflows.put(bgtKey, -100.0);
         cashflows.put(giroKey, -100.0);
         transaction.setCashflows(cashflows);
-        var tradeInfo = new Position(depotKey,equityKey, 10);
+        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
         transaction.setTradeInfo(tradeInfo);
 
         var transactionmono = transactionService.validateTransaction(transaction);
@@ -299,7 +232,7 @@ class TransactionServiceTest extends EventProcessorTestBase{
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);
         transaction.setCashflows(cashflows);
-        var tradeInfo = new Position(depotKey,equityKey, 10);
+        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
         transaction.setTradeInfo(tradeInfo);
 
         var transactionmono = transactionService.validateTransaction(transaction);

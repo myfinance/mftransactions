@@ -6,7 +6,6 @@ import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 
 import de.hf.myfinance.transaction.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +17,6 @@ public class ProcessRecurrentTransactionsProcessorConfig {
     private final AuditService auditService;
     private final TransactionService transactionService;
     protected static final String AUDIT_MSG_TYPE="ProcessRecurrentTransactionsProcessorConfig_Event";
-    @Autowired
     public ProcessRecurrentTransactionsProcessorConfig(AuditService auditService, TransactionService transactionService) {
         this.auditService = auditService;
         this.transactionService = transactionService;

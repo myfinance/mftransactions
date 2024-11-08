@@ -10,7 +10,6 @@ import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.transaction.persistence.RecurrentTransactionMapper;
 import de.hf.myfinance.transaction.persistence.entities.RecurrentTransactionEntity;
 import de.hf.myfinance.transaction.persistence.repositories.RecurrentTransactionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Mono;
@@ -25,7 +24,6 @@ public class SaveRecurrentTransactionProcessorConfig {
     private final AuditService auditService;
     private final RecurrentTransactionRepository recurrentTransactionRepository;
 
-    @Autowired
     public SaveRecurrentTransactionProcessorConfig(RecurrentTransactionMapper recurrentTransactionMapper, AuditService auditService, RecurrentTransactionRepository recurrentTransactionRepository) {
         this.recurrentTransactionMapper = recurrentTransactionMapper;
         this.auditService = auditService;
