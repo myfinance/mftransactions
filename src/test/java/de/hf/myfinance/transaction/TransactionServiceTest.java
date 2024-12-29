@@ -130,6 +130,34 @@ class TransactionServiceTest extends EventProcessorTestBase{
     }
 
     @Test
+    void createDividend() {
+        initDb();
+
+        var desc = "testdividend";
+        LocalDate transactionDate = LocalDate.of(2022, 1, 1);
+        var transaction = new Transaction(desc, transactionDate, TransactionType.DEPOTCASHFLOW);
+        var cashflows = new HashMap<String, Double>();
+        cashflows.put(bgtKey, 100.0);
+        cashflows.put(giroKey, 100.0);
+        transaction.setCashflows(cashflows);
+        transaction.setSecurityId(equityKey);
+        transaction.setAccId(depotKey);
+        transactionService.validateTransaction(transaction).block();
+
+        final List<String> messages = getMessages(transactionApprovedBindingName);
+        assertEquals(1, messages.size());
+
+        JsonHelper jsonHelper = new JsonHelper();
+        var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
+        assertEquals(transactionDate.toString(), data.get("transactiondate"));
+        assertEquals(desc, data.get("description"));
+        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(equityKey, data.get("securityId"));
+        assertEquals(depotKey, data.get("accId"));
+        assertEquals(TransactionType.DEPOTCASHFLOW.toString(), data.get("transactionType"));
+    }
+
+    @Test
     void createIncomeFailsDueToNotExistingInstrument() {
         initDb();
 

@@ -7,7 +7,6 @@ import de.hf.myfinance.restmodel.*;
 import de.hf.myfinance.transaction.events.out.RecurrentTransactionApprovedEventHandler;
 import de.hf.myfinance.transaction.events.out.ValidateTransactionEventHandler;
 import de.hf.myfinance.transaction.persistence.DataReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,7 +28,6 @@ public class RecurrentTransactionHandler {
 
     private DataReader dataReader;
 
-    @Autowired
     public RecurrentTransactionHandler(AuditService auditService, DataReader dataReader, RecurrentTransactionApprovedEventHandler recurrentTransactionApprovedEventHandler, ValidateTransactionEventHandler validateTransactionEventHandler) {
         this.auditService = auditService;
         this.dataReader = dataReader;

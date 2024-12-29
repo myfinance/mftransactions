@@ -119,7 +119,7 @@ public class EventProcessorTestBase extends MongoDbTestBase {
         inactivebudget.setTenantBusinesskey(tenantKey);
         instrumentRepository.save(inactivebudget).block();
 
-        var depot = new InstrumentEntity(depotKey, InstrumentType.GIRO, true);
+        var depot = new InstrumentEntity(depotKey, InstrumentType.DEPOT, true);
         depot.setTenantBusinesskey(tenantKey);
         instrumentRepository.save(depot).block();
 

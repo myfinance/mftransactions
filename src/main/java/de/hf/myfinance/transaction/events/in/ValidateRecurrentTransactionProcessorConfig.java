@@ -5,7 +5,6 @@ import de.hf.framework.audit.Severity;
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.transaction.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +17,6 @@ public class ValidateRecurrentTransactionProcessorConfig {
     private final AuditService auditService;
     private static final String AUDIT_MSG_TYPE="ValidateRecurrentTransactionProcessorConfig_Event";
 
-    @Autowired
     public ValidateRecurrentTransactionProcessorConfig(TransactionService transactionService, AuditService auditService) {
         this.transactionService = transactionService;
         this.auditService = auditService;

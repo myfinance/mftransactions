@@ -6,7 +6,6 @@ import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.events.out.TransactionApprovedEventHandler;
 import de.hf.myfinance.transaction.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,7 +19,6 @@ public class ValidateTransactionProcessorConfig {
     private final TransactionService transactionService;
     private final TransactionApprovedEventHandler eventHandler;
 
-    @Autowired
     public ValidateTransactionProcessorConfig(AuditService auditService, TransactionService transactionService, TransactionApprovedEventHandler eventHandler) {
         this.transactionService = transactionService;
         this.auditService = auditService;
