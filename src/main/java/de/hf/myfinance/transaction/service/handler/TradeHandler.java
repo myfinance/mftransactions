@@ -30,7 +30,7 @@ public class TradeHandler  extends IncomeExpensesHandler{
     }
 
     private Mono<Transaction> depotValidation(Transaction transaction){
-        return transactionEnvironment.getDataReader().findByBusinesskey(transaction.getTradeInfo().getDepotBusinessKey()).switchIfEmpty(handleNotExistingInstrument())
+        return transactionEnvironment.getDataReader().findByBusinesskey(transaction.getTradeInfo().getDepotBusinessKey()).switchIfEmpty(handleNotExistingInstrument(transaction.getTradeInfo().getDepotBusinessKey()))
         .flatMap(i->{
             if (!i.isActive()){
                 return Mono.error(new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "the depot is not allowed to be inactive:"+transaction.getTradeInfo().getDepotBusinessKey()));
@@ -39,12 +39,12 @@ public class TradeHandler  extends IncomeExpensesHandler{
         });
     }
 
-    private Mono<Instrument> handleNotExistingInstrument(){
-        return Mono.error(new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "No Instrument for this id available:"+transaction.getTradeInfo().getDepotBusinessKey()));
+    private Mono<Instrument> handleNotExistingInstrument(String instrumentId){
+        return Mono.error(new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "No Instrument for this id available:"+instrumentId));
     }
 
     private Mono<Transaction> securityValidation(Transaction transaction){
-        return transactionEnvironment.getDataReader().findByBusinesskey(transaction.getTradeInfo().getSecurityBusinessKey()).switchIfEmpty(handleNotExistingInstrument())
+        return transactionEnvironment.getDataReader().findByBusinesskey(transaction.getTradeInfo().getSecurityBusinessKey()).switchIfEmpty(handleNotExistingInstrument(transaction.getTradeInfo().getSecurityBusinessKey()))
         .flatMap(i->{
             if (!i.isActive()){
                 return Mono.error(new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "the security is not allowed to be inactive:"+transaction.getTradeInfo().getSecurityBusinessKey()));
