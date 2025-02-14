@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Component
 public class TransactionService {
@@ -67,10 +68,11 @@ public class TransactionService {
     }
 
     public Mono<Double> getAvgExpensesOfLastYear(String businesskey){
-        var endDate = LocalDate.of(
-            LocalDate.now().getYear(), 
-            LocalDate.now().minusMonths(1).getMonth(), 
-            1);
-        return listInstrumentCashflows(businesskey, endDate.minusYears(1), endDate).filter(c->c.getValue()<0).map(Cashflow::getValue).reduce(0.0,Double::sum).map(s->s/12);
+        LocalDate today = LocalDate.now();
+        // Get the previous month
+        YearMonth lastMonth = YearMonth.from(today).minusMonths(1);
+        // Get the last day of the last month
+        LocalDate lastDayOfLastMonth = lastMonth.atEndOfMonth();
+        return listInstrumentCashflows(businesskey, lastDayOfLastMonth.minusYears(1), lastDayOfLastMonth).filter(c->c.getValue()<0).map(Cashflow::getValue).reduce(0.0,Double::sum).map(s->s/12);
     }
 }

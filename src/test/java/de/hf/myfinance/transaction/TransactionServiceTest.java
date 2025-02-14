@@ -462,7 +462,7 @@ class TransactionServiceTest extends EventProcessorTestBase{
         initDb();
 
         var desc = "testeinkommen";
-        LocalDate transactionDate = LocalDate.of(LocalDate.now().getYear(), 1, 2);
+        LocalDate transactionDate = LocalDate.now().minusMonths(2);
         var transaction = new TransactionEntity(desc, transactionDate, TransactionType.EXPENSE);
         var cashflows = new HashMap<String, Double>();
         cashflows.put(inactivebgtKey, -120.0);
