@@ -49,7 +49,11 @@ public class SaveInstrumentProcessorConfig {
                     Instrument instrument = event.getData();
                     if(instrument.getInstrumentType().equals(InstrumentType.BUDGET) 
                         || instrument.getInstrumentType().equals(InstrumentType.GIRO)
+                        || instrument.getInstrumentType().equals(InstrumentType.MONEYATCALL)
+                        || instrument.getInstrumentType().equals(InstrumentType.TIMEDEPOSIT)
+                        || instrument.getInstrumentType().equals(InstrumentType.BUILDINGSAVINGACCOUNT)
                         || instrument.getInstrumentType().equals(InstrumentType.DEPOT)
+                        || instrument.getInstrumentType().equals(InstrumentType.LOAN)
                         || instrument.getInstrumentType().getTypeGroup().equals(InstrumentTypeGroup.SECURITY)){
                         var instrumentEntity = map2entity(instrument);
                         instrumentRepository.deleteByBusinesskey(instrumentEntity.getBusinesskey()).then(instrumentRepository.save(instrumentEntity)).block();
