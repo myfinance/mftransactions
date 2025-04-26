@@ -48,7 +48,7 @@ public class IncomeExpensesHandler extends AbsTransactionHandler{
     }
 
 
-    private void setInstrument(Instrument instrument){
+    protected void setInstrument(Instrument instrument){
         if(instrument.getInstrumentType().equals(InstrumentType.BUDGET)){
             budget = instrument;
         } else if(instrument.getInstrumentType().equals(InstrumentType.GIRO)){

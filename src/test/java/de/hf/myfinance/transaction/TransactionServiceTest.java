@@ -139,9 +139,8 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var cashflows = new HashMap<String, Double>();
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);
+        cashflows.put(equityKey, 100.0);
         transaction.setCashflows(cashflows);
-        transaction.setSecurityId(equityKey);
-        transaction.setAccId(depotKey);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -151,9 +150,7 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
-        assertEquals(equityKey, data.get("securityId"));
-        assertEquals(depotKey, data.get("accId"));
+        assertEquals(cashflows, data.get("cashflows"));;
         assertEquals(TransactionType.DEPOTCASHFLOW.toString(), data.get("transactionType"));
     }
 
@@ -168,7 +165,6 @@ class TransactionServiceTest extends EventProcessorTestBase{
         cashflows.put(bgtKey, 100.0);
         cashflows.put(giroKey, 100.0);
         transaction.setCashflows(cashflows);
-        transaction.setAccId(depotKey);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -179,8 +175,32 @@ class TransactionServiceTest extends EventProcessorTestBase{
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
         assertEquals(cashflows, data.get("cashflows"));
-        assertEquals(depotKey, data.get("accId"));
         assertEquals(TransactionType.INTERESTS.toString(), data.get("transactionType"));
+    }
+
+    @Test
+    void createLifeinsuranceExpenses() {
+        initDb();
+
+        var desc = "test lifeinsurance expense";
+        LocalDate transactionDate = LocalDate.of(2022, 1, 1);
+        var transaction = new Transaction(desc, transactionDate, TransactionType.LIFEINSURANCEEXPENSE);
+        var cashflows = new HashMap<String, Double>();
+        cashflows.put(bgtKey, -100.0);
+        cashflows.put(giroKey, -100.0);
+        cashflows.put(lifeInsuranceKey, -100.0);
+        transaction.setCashflows(cashflows);
+        transactionService.validateTransaction(transaction).block();
+
+        final List<String> messages = getMessages(transactionApprovedBindingName);
+        assertEquals(1, messages.size());
+
+        JsonHelper jsonHelper = new JsonHelper();
+        var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
+        assertEquals(transactionDate.toString(), data.get("transactiondate"));
+        assertEquals(desc, data.get("description"));
+        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(TransactionType.LIFEINSURANCEEXPENSE.toString(), data.get("transactionType"));
     }
 
     @Test

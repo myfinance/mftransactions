@@ -32,8 +32,11 @@ public class TransactionHandlerFactory {
             case BUDGETTRANSFER:
                 return new BudgetTransferHandler(transactionEnvironment, transaction);
             case INTERESTS:
+                return new InterestHandler(transactionEnvironment, transaction);
+            case LIFEINSURANCEEXPENSE:
+                return new LifeInsurenceExpenseHandler(transactionEnvironment, transaction);
             case DEPOTCASHFLOW:
-                return new LinkedInstrumentHandler(transactionEnvironment, transaction);
+                return new DepotCashflowHandler(transactionEnvironment, transaction);
             default:
                 throw new MFException(MFMsgKey.UNKNOWN_TRNSACTIONTYPE_EXCEPTION, "can not create Transactionhandler for transactionType:"+transaction.getTransactionType());
         }

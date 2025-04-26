@@ -52,6 +52,7 @@ public class EventProcessorTestBase extends MongoDbTestBase {
     String giroOtherTenantKey = "newOtherTenantGiro2@1";
     String depotKey = "depot@11";
     String equityKey = "equity@14";
+    String lifeInsuranceKey = "lifeinsurance@14";
 
     String inactivebgtKey = "inactivebudget@10";
 
@@ -126,5 +127,9 @@ public class EventProcessorTestBase extends MongoDbTestBase {
         var equity = new InstrumentEntity(equityKey, InstrumentType.EQUITY, true);
         equity.setTenantBusinesskey(tenantKey);
         instrumentRepository.save(equity).block();
+
+        var lifeinsurance = new InstrumentEntity(lifeInsuranceKey, InstrumentType.LIFEINSURANCE, true);
+        lifeinsurance.setTenantBusinesskey(tenantKey);
+        instrumentRepository.save(lifeinsurance).block();
     }
 }
