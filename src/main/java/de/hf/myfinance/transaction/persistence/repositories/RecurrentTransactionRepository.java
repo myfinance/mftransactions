@@ -6,5 +6,7 @@ import reactor.core.publisher.Flux;
 
 
 public interface RecurrentTransactionRepository  extends ReactiveCrudRepository<RecurrentTransactionEntity, String> {
-    Flux<RecurrentTransactionEntity> findByFirstInstrumentBusinessKeyOrSecondInstrumentBusinessKey(String firstInstrumentBusinessKey, String secondInstrumentBusinessKey);
+    Flux<RecurrentTransactionEntity> findByBudgetKeyOrAccKeyOrTrgBudgetKeyOrTrgAccKeyOrInsuranceKey
+        (String budgetKey, String accKey, String trgBudgetKey, String trgAccKey, String insuranceKey);
 }
+

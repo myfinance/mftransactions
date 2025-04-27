@@ -14,8 +14,11 @@ public class RecurrentTransactionEntity {
     private String recurrentTransactionId;
     @Version
     private Integer version;
-    private String firstInstrumentBusinessKey;
-    private String secondInstrumentBusinessKey;
+    private String budgetKey;
+    private String trgBudgetKey;
+    private String accKey;
+    private String trgAccKey;
+    private String insuranceKey; 
     private RecurrentFrequency recurrentFrequency;
     private double value;
     private LocalDate nextTransactionDate;
@@ -35,22 +38,6 @@ public class RecurrentTransactionEntity {
     }
     public void setVersion(Integer version) {
         this.version = version;
-    }
-
-    public String getFirstInstrumentBusinessKey() {
-        return this.firstInstrumentBusinessKey;
-    }
-
-    public void setFirstInstrumentBusinessKey(String firstInstrumentBusinessKey) {
-        this.firstInstrumentBusinessKey = firstInstrumentBusinessKey;
-    }
-
-    public String getSecondInstrumentBusinessKey() {
-        return this.secondInstrumentBusinessKey;
-    }
-
-    public void setSecondInstrumentBusinessKey(String secondInstrumentBusinessKey) {
-        this.secondInstrumentBusinessKey = secondInstrumentBusinessKey;
     }
 
     public RecurrentFrequency getRecurrentFrequency() {
@@ -91,4 +78,46 @@ public class RecurrentTransactionEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
+    public String getBudgetKey() {
+        return this.budgetKey;
+    }
+
+    public void setBudgetKey(String budgetKey) {
+        this.budgetKey = budgetKey;
+    }
+
+    public String getTrgBudgetKey() {
+        return this.trgBudgetKey;
+    }
+
+    public void setTrgBudgetKey(String trgBudgetKey) {
+        this.trgBudgetKey = trgBudgetKey;
+    }
+
+    public String getAccKey() {
+        return this.accKey;
+    }
+
+    public void setAccKey(String accKey) {
+        this.accKey = accKey;
+    }
+
+    public String getTrgAccKey() {
+        return this.trgAccKey;
+    }
+
+    public void setTrgAccKey(String trgAccKey) {
+        this.trgAccKey = trgAccKey;
+    }
+
+    public String getInsuranceKey() {
+        return this.insuranceKey;
+    }
+
+    public void setInsuranceKey(String insuranceKey) {
+        this.insuranceKey = insuranceKey;
+    }
+
 }

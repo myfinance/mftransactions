@@ -88,8 +88,8 @@ public class SaveInstrumentProcessorTest extends EventProcessorTestBase {
         var recurrentTransaction = new RecurrentTransactionEntity();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setDescription("test");
         recurrentTransaction.setValue(100);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
@@ -109,8 +109,8 @@ public class SaveInstrumentProcessorTest extends EventProcessorTestBase {
         var msg = jsonHelper.convertJsonStringToMap((recurrenttransactionUpdateMessages.get(0)));
         assertEquals("DELETE", (String)msg.get("eventType"));
         var data = (LinkedHashMap)msg.get("data");
-        assertEquals(giroKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(bgtKey, data.get("secondInstrumentBusinessKey"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));

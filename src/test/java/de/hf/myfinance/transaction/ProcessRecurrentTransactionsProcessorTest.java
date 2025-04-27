@@ -17,7 +17,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,8 +39,8 @@ public class ProcessRecurrentTransactionsProcessorTest extends EventProcessorTes
         var recurrentTransaction = new RecurrentTransactionEntity();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setDescription("test");
         recurrentTransaction.setValue(100);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
@@ -60,17 +59,16 @@ public class ProcessRecurrentTransactionsProcessorTest extends EventProcessorTes
         assertEquals("test", data.get("description"));
         assertEquals(nextTransactiondate.toString(), data.get("transactiondate"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
-        var savedCashflows = (Map<String, Double>)data.get("cashflows");
-        assertEquals(2, savedCashflows.size());
-        assertEquals(100, savedCashflows.get(giroKey));
-        assertEquals(100, savedCashflows.get(bgtKey));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
 
 
         final List<String> recurrenttransactionUpdateMessages = getMessages(recurrentTransactionApprovedBindingName);
         assertEquals(1, recurrenttransactionUpdateMessages.size());
         data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((recurrenttransactionUpdateMessages.get(0))).get("data");
-        assertEquals(giroKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(bgtKey, data.get("secondInstrumentBusinessKey"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.plusMonths(1).toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
@@ -87,8 +85,8 @@ public class ProcessRecurrentTransactionsProcessorTest extends EventProcessorTes
         var recurrentTransaction = new RecurrentTransactionEntity();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setDescription("test");
         recurrentTransaction.setValue(100);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
@@ -108,26 +106,24 @@ public class ProcessRecurrentTransactionsProcessorTest extends EventProcessorTes
         assertEquals("test", data.get("description"));
         assertEquals(nextTransactiondate.toString(), data.get("transactiondate"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
-        var savedCashflows = (Map<String, Double>)data.get("cashflows");
-        assertEquals(2, savedCashflows.size());
-        assertEquals(100, savedCashflows.get(giroKey));
-        assertEquals(100, savedCashflows.get(bgtKey));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
 
         data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((messages.get(1))).get("data");
         assertEquals("test", data.get("description"));
         assertEquals(nextTransactiondate.plusMonths(1).toString(), data.get("transactiondate"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
-        savedCashflows = (Map<String, Double>)data.get("cashflows");
-        assertEquals(2, savedCashflows.size());
-        assertEquals(100, savedCashflows.get(giroKey));
-        assertEquals(100, savedCashflows.get(bgtKey));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
 
 
         final List<String> recurrenttransactionUpdateMessages = getMessages(recurrentTransactionApprovedBindingName);
         assertEquals(1, recurrenttransactionUpdateMessages.size());
         data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((recurrenttransactionUpdateMessages.get(0))).get("data");
-        assertEquals(giroKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(bgtKey, data.get("secondInstrumentBusinessKey"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.plusMonths(2).toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));

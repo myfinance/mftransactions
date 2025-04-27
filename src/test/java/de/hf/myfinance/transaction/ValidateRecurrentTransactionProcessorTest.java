@@ -37,10 +37,11 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
 
         var nextTransactiondate = LocalDate.now().plusMonths(1);
         var recurrentTransaction = new RecurrentTransaction();
+        recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setValue(100);
         recurrentTransaction.setRecurrentTransactionId(" ");
 
@@ -53,8 +54,8 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
         var data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
-        assertEquals(giroKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(bgtKey, data.get("secondInstrumentBusinessKey"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
@@ -70,9 +71,10 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
-        recurrentTransaction.setValue(-100);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
+        recurrentTransaction.setValue(100);
+        recurrentTransaction.setTransactionType(TransactionType.EXPENSE);
 
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
@@ -83,11 +85,11 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
         var data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
-        assertEquals(giroKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(bgtKey, data.get("secondInstrumentBusinessKey"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
-        assertEquals(-100.0, data.get("value"));
+        assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.EXPENSE.toString(), data.get("transactionType"));
     }
 
@@ -99,9 +101,10 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(giro2Key);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setTrgAccKey(giro2Key);
         recurrentTransaction.setValue(100);
+        recurrentTransaction.setTransactionType(TransactionType.TRANSFER);
 
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
@@ -112,8 +115,8 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
         var data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
-        assertEquals(giroKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(giro2Key, data.get("secondInstrumentBusinessKey"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(giro2Key, data.get("trgAccKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));
@@ -128,9 +131,10 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(bgtKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgt2Key);
+        recurrentTransaction.setBudgetKey(bgtKey);
+        recurrentTransaction.setTrgBudgetKey(bgt2Key);
         recurrentTransaction.setValue(100);
+        recurrentTransaction.setTransactionType(TransactionType.BUDGETTRANSFER);
 
 
         Event creatEvent = new Event(Event.Type.CREATE, recurrentTransaction.toString(), recurrentTransaction);
@@ -141,8 +145,8 @@ class ValidateRecurrentTransactionProcessorTest extends EventProcessorTestBase{
         LOG.info(messages.get(0));
         JsonHelper jsonHelper = new JsonHelper();
         var data = (LinkedHashMap)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
-        assertEquals(bgtKey, data.get("firstInstrumentBusinessKey"));
-        assertEquals(bgt2Key, data.get("secondInstrumentBusinessKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(bgt2Key, data.get("trgBudgetKey"));
         assertEquals(RecurrentFrequency.MONTHLY.toString(), data.get("recurrentFrequency"));
         assertEquals(nextTransactiondate.toString(), data.get("nextTransactionDate"));
         assertEquals(100.0, data.get("value"));

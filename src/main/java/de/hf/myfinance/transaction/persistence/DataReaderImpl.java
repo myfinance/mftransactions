@@ -69,7 +69,7 @@ public class DataReaderImpl implements DataReader{
 
     @Override
     public Flux<RecurrentTransaction> findRecurrentTransactionsByInstrument(String businesskey){
-        return recurrentTransactionRepository.findByFirstInstrumentBusinessKeyOrSecondInstrumentBusinessKey(businesskey, businesskey)
+        return recurrentTransactionRepository.findByBudgetKeyOrAccKeyOrTrgBudgetKeyOrTrgAccKeyOrInsuranceKey(businesskey, businesskey, businesskey, businesskey, businesskey)
                 .map(recurrentTransactionMapper::entityToApi);
     }
 

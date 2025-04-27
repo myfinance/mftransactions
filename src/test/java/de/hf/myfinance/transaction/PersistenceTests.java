@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -33,10 +32,9 @@ public class PersistenceTests extends MongoDbTestBase {
         transaction.setTransactiondate(LocalDate.of(2022, 1, 1));
         transaction.setTransactionType(TransactionType.INCOME);
         transaction.setDescription("testeinkommen");
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put("budget", 100.0);
-        cashflows.put("giro", 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey("giro");
+        transaction.setBudgetKey("budget");
+        transaction.setValue(100.0);
         repository.save(transaction).block();
         assertEquals(1, repository.count().block());
 
@@ -44,10 +42,9 @@ public class PersistenceTests extends MongoDbTestBase {
         transaction2.setTransactiondate(LocalDate.of(2022, 2, 1));
         transaction2.setTransactionType(TransactionType.INCOME);
         transaction2.setDescription("testeinkommen2");
-        var cashflows2 = new HashMap<String, Double>();
-        cashflows.put("budget", 100.0);
-        cashflows.put("giro", 100.0);
-        transaction.setCashflows(cashflows2);
+        transaction2.setAccKey("giro");
+        transaction2.setBudgetKey("budget");
+        transaction2.setValue(100.0);
         repository.save(transaction2).block();
         assertEquals(2, repository.count().block());
 

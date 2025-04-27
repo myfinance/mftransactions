@@ -15,7 +15,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -36,10 +35,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -49,7 +47,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
     }
 
@@ -60,10 +60,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.EXPENSE);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, -100.0);
-        cashflows.put(giroKey, -100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(-100.0);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -73,7 +72,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.EXPENSE.toString(), data.get("transactionType"));
     }
 
@@ -84,12 +85,12 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testbuy";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.BUY);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, -100.0);
-        cashflows.put(giroKey, -100.0);
-        transaction.setCashflows(cashflows);
-        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
-        transaction.setTradeInfo(tradeInfo);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(-100.0);
+        transaction.setAmount(10.0);
+        transaction.setDepotBusinessKey(depotKey);
+        transaction.setSecurityBusinessKey(equityKey);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -99,7 +100,12 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
+        assertEquals(10.0, data.get("amount"));
+        assertEquals(depotKey, data.get("depotBusinessKey"));
+        assertEquals(equityKey, data.get("securityBusinessKey"));
         assertEquals(TransactionType.BUY.toString(), data.get("transactionType"));
     }
 
@@ -110,12 +116,12 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testsell";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.SELL);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
-        transaction.setTradeInfo(tradeInfo);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
+        transaction.setAmount(10.0);
+        transaction.setDepotBusinessKey(depotKey);
+        transaction.setSecurityBusinessKey(equityKey);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -125,7 +131,12 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
+        assertEquals(10.0, data.get("amount"));
+        assertEquals(depotKey, data.get("depotBusinessKey"));
+        assertEquals(equityKey, data.get("securityBusinessKey"));
         assertEquals(TransactionType.SELL.toString(), data.get("transactionType"));
     }
 
@@ -136,11 +147,11 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testdividend";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.DEPOTCASHFLOW);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        cashflows.put(equityKey, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
+        transaction.setSecurityBusinessKey(equityKey);
+
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -150,7 +161,10 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));;
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
+        assertEquals(equityKey, data.get("securityBusinessKey"));
         assertEquals(TransactionType.DEPOTCASHFLOW.toString(), data.get("transactionType"));
     }
 
@@ -161,10 +175,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testinterest";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.INTERESTS);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -174,7 +187,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.INTERESTS.toString(), data.get("transactionType"));
     }
 
@@ -185,11 +200,10 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "test lifeinsurance expense";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.LIFEINSURANCEEXPENSE);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, -100.0);
-        cashflows.put(giroKey, -100.0);
-        cashflows.put(lifeInsuranceKey, -100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(-100.0);
+        transaction.setInsuranceKey(lifeInsuranceKey);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -199,7 +213,10 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
+        assertEquals(lifeInsuranceKey, data.get("insuranceKey"));
         assertEquals(TransactionType.LIFEINSURANCEEXPENSE.toString(), data.get("transactionType"));
     }
 
@@ -210,10 +227,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put("not existing budget", 100.0);
-        cashflows.put("not existing Giro", 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey("not existing Giro");
+        transaction.setBudgetKey("not existing budget");
+        transaction.setValue(100.0);
 
         var transactionmono = transactionService.validateTransaction(transaction);
         assertThrows(MFException.class, () -> {
@@ -222,37 +238,52 @@ class TransactionServiceTest extends EventProcessorTestBase{
     }
 
     @Test
-    void createIncomeFailsDueToNegativeValue() {
+    void createIncomeWithNegativeValue() {
         initDb();
 
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, -100.0);
-        cashflows.put(giroKey, -100.0);
-        transaction.setCashflows(cashflows);
-        var transactionmono = transactionService.validateTransaction(transaction);
-        assertThrows(MFException.class, () -> {
-            transactionmono.block();
-        });
-    }
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(-100.0);
+        transactionService.validateTransaction(transaction).block();
 
+        final List<String> messages = getMessages(transactionApprovedBindingName);
+        assertEquals(1, messages.size());
+
+        JsonHelper jsonHelper = new JsonHelper();
+        var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
+        assertEquals(transactionDate.toString(), data.get("transactiondate"));
+        assertEquals(desc, data.get("description"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
+        assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
+    }
     @Test
-    void createExpenseFailsDueToPositiveValue() {
+    void createExpenseWithNegativeValue() {
         initDb();
 
-        var desc = "testeinkommen";
+        var desc = "testausgabe";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.EXPENSE);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-        var transactionmono = transactionService.validateTransaction(transaction);
-        assertThrows(MFException.class, () -> {
-            transactionmono.block();
-        });
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(-100.0);
+        transactionService.validateTransaction(transaction).block();
+
+        final List<String> messages = getMessages(transactionApprovedBindingName);
+        assertEquals(1, messages.size());
+
+        JsonHelper jsonHelper = new JsonHelper();
+        var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
+        assertEquals(transactionDate.toString(), data.get("transactiondate"));
+        assertEquals(desc, data.get("description"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
+        assertEquals(TransactionType.EXPENSE.toString(), data.get("transactionType"));
     }
 
     @Test
@@ -262,58 +293,14 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroOtherTenantKey, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroOtherTenantKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
 
         var transactionmono = transactionService.validateTransaction(transaction);
         assertThrows(MFException.class, () -> {
             transactionmono.block();
         });
-    }
-
-
-    @Test
-    void createSellFailsDueToNegativeValue() {
-        initDb();
-
-        var desc = "testsell";
-        LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.SELL);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, -100.0);
-        cashflows.put(giroKey, -100.0);
-        transaction.setCashflows(cashflows);
-        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
-        transaction.setTradeInfo(tradeInfo);
-
-        var transactionmono = transactionService.validateTransaction(transaction);
-        assertThrows(MFException.class, () -> {
-            transactionmono.block();
-        });
-
-    }
-
-    @Test
-    void createBuyFailsDueToPositivValue() {
-        initDb();
-
-        var desc = "testsell";
-        LocalDate transactionDate = LocalDate.of(2022, 1, 1);
-        var transaction = new Transaction(desc, transactionDate, TransactionType.BUY);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-        var tradeInfo = new Trade(depotKey,equityKey, 10.0);
-        transaction.setTradeInfo(tradeInfo);
-
-        var transactionmono = transactionService.validateTransaction(transaction);
-        assertThrows(MFException.class, () -> {
-            transactionmono.block();
-        });
-
     }
 
     @Test
@@ -323,19 +310,17 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new TransactionEntity(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
         transactionRepository.save(transaction).block();
 
         var id = transactionRepository.findAll().collectList().block().get(0).getTransactionId();
 
         var updatedTransaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        var updatedCashflows = new HashMap<String, Double>();
-        updatedCashflows.put(bgtKey, 200.0);
-        updatedCashflows.put(giroKey, 200.0);
-        updatedTransaction.setCashflows(updatedCashflows);
+        updatedTransaction.setAccKey(giroKey);
+        updatedTransaction.setBudgetKey(bgtKey);
+        updatedTransaction.setValue(200.0);
         updatedTransaction.setTransactionId(id);
         transactionService.validateTransaction(updatedTransaction).block();
 
@@ -359,7 +344,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
 
         assertEquals(expectedTransaction.getTransactiondate().toString(), data.get("transactiondate"));
         assertEquals(expectedTransaction.getDescription(), data.get("description"));
-        assertEquals(expectedTransaction.getCashflows(), data.get("cashflows"));
+        assertEquals(expectedTransaction.getAccKey(), data.get("accKey"));
+        assertEquals(expectedTransaction.getBudgetKey(), data.get("budgetKey"));
+        assertEquals(expectedTransaction.getValue(), data.get("value"));
         assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
 
         if(eventType.equals("CREATE")){
@@ -380,10 +367,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testbudgettransfer";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.BUDGETTRANSFER);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(bgtKey, -100.0);
-        cashflows.put(bgt2Key, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setTrgBudgetKey(bgt2Key);
+        transaction.setBudgetKey(bgtKey);
+        transaction.setValue(100.0);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -393,7 +379,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(bgt2Key, data.get("trgBudgetKey"));
+        assertEquals(bgtKey, data.get("budgetKey"));
+        assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.BUDGETTRANSFER.toString(), data.get("transactionType"));
     }
 
@@ -404,10 +392,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testtransfer";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.TRANSFER);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(giroKey, -100.0);
-        cashflows.put(giro2Key, 100.0);
-        transaction.setCashflows(cashflows);
+        transaction.setAccKey(giroKey);
+        transaction.setTrgAccKey(giro2Key);
+        transaction.setValue(100.0);
         transactionService.validateTransaction(transaction).block();
 
         final List<String> messages = getMessages(transactionApprovedBindingName);
@@ -417,7 +404,9 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap((messages.get(0))).get("data");
         assertEquals(transactionDate.toString(), data.get("transactiondate"));
         assertEquals(desc, data.get("description"));
-        assertEquals(cashflows, data.get("cashflows"));
+        assertEquals(giroKey, data.get("accKey"));
+        assertEquals(giro2Key, data.get("trgAccKey"));
+        assertEquals(100.0, data.get("value"));
         assertEquals(TransactionType.TRANSFER.toString(), data.get("transactionType"));
     }
 
@@ -430,8 +419,8 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var recurrentTransaction = new RecurrentTransactionEntity();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(bgtKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgt2Key);
+        recurrentTransaction.setBudgetKey(bgtKey);
+        recurrentTransaction.setTrgBudgetKey(bgt2Key);
         recurrentTransaction.setValue(100);
 
         recurrentTransactionRepository.save(recurrentTransaction).block();
@@ -447,80 +436,16 @@ class TransactionServiceTest extends EventProcessorTestBase{
         var desc = "testeinkommen";
         LocalDate transactionDate = LocalDate.of(2022, 1, 1);
         var transaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(inactivebgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-
+        transaction.setAccKey(giroKey);
+        transaction.setBudgetKey(inactivebgtKey);
+        transaction.setValue(100.0);
         var transactionmono = transactionService.validateTransaction(transaction);
         assertThrows(MFException.class, () -> {
             transactionmono.block();
         });
     }
 
-    @Test
-    void getAvgExpensesOfLastYear_noExpenses() {
-        initDb();
 
-        var desc = "testeinkommen";
-        LocalDate transactionDate = LocalDate.of(LocalDate.now().getYear(), 1, 2);
-        var transaction = new TransactionEntity(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(inactivebgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-
-        transactionRepository.save(transaction).block();
-
-
-        var avgExpenses = transactionService.getAvgExpensesOfLastYear(giroKey).block();
-        assertEquals(0, avgExpenses);
-    }
-
-    @Test
-    void getAvgExpensesOfLastYear_singleExpenses() {
-        initDb();
-
-        var desc = "testeinkommen";
-        LocalDate transactionDate = LocalDate.now().minusMonths(2);
-        var transaction = new TransactionEntity(desc, transactionDate, TransactionType.EXPENSE);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(inactivebgtKey, -120.0);
-        cashflows.put(giroKey, -120.0);
-        transaction.setCashflows(cashflows);
-
-        transactionRepository.save(transaction).block();
-
-
-        var avgExpenses = transactionService.getAvgExpensesOfLastYear(giroKey).block();
-        assertEquals(-10, avgExpenses);
-    }
-
-    @Test
-    void listInstrumentCashflows() {
-        initDb();
-
-        var desc = "testeinkommen";
-        LocalDate transactionDate = LocalDate.of(2024, 1, 2);
-        var transaction = new TransactionEntity(desc, transactionDate, TransactionType.INCOME);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(inactivebgtKey, 100.0);
-        cashflows.put(giroKey, 100.0);
-        transaction.setCashflows(cashflows);
-        transactionRepository.save(transaction).block();
-
-        desc = "testausgabe";
-        transaction = new TransactionEntity(desc, transactionDate, TransactionType.EXPENSE);
-        cashflows = new HashMap<String, Double>();
-        cashflows.put(inactivebgtKey, -10.0);
-        cashflows.put(giroKey, -10.0);
-        transaction.setCashflows(cashflows);
-        transactionRepository.save(transaction).block();
-
-
-        var result = transactionService.listInstrumentCashflows(giroKey, transactionDate.minusDays(1), transactionDate.plusDays(1)).collectList().block();
-        assertEquals(2, result.size());
-    }
 
 
 }

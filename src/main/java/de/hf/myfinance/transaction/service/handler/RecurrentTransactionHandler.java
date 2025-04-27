@@ -2,6 +2,7 @@ package de.hf.myfinance.transaction.service.handler;
 
 import de.hf.framework.audit.AuditService;
 import de.hf.framework.audit.Severity;
+import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.*;
 import de.hf.myfinance.transaction.events.out.RecurrentTransactionApprovedEventHandler;
@@ -13,14 +14,12 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 
 @Component
 public class RecurrentTransactionHandler {
 
     private AuditService auditService;
-    private static final String ERROR_MSG = "Recurrent Transaction not valid";
     private static final String AUDIT_MSG_TYPE="RecurrentTransaction_User_Event";
     private final RecurrentTransactionApprovedEventHandler recurrentTransactionApprovedEventHandler;
 
@@ -76,25 +75,61 @@ public class RecurrentTransactionHandler {
         transaction.setTransactionType(i.getTransactionType());
         transaction.setLastchanged(ts);
         transaction.setTransactiondate(nextTransaction);
-        var cashflows = new HashMap<String, Double>();
-        cashflows.put(i.getFirstInstrumentBusinessKey(), i.getValue());
-        if(i.getTransactionType().equals(TransactionType.INCOME) || i.getTransactionType().equals(TransactionType.EXPENSE)) {
-            cashflows.put(i.getSecondInstrumentBusinessKey(), i.getValue());
-        } else {
-            cashflows.put(i.getSecondInstrumentBusinessKey(), i.getValue() * (-1));
-        }
-        transaction.setCashflows(cashflows);
+        transaction.setValue(i.getValue());
+        transaction.setAccKey(i.getAccKey());
+        transaction.setBudgetKey(i.getBudgetKey());
+        transaction.setInsuranceKey(i.getInsuranceKey());
+        transaction.setTrgAccKey(i.getTrgAccKey());
+        transaction.setTrgBudgetKey(i.getTrgBudgetKey());
+
         return transaction;
     }
 
     public Mono<String> validateRecurrentTransaction(RecurrentTransaction recurrentTransaction) {
 
-        return getInstrument(recurrentTransaction.getFirstInstrumentBusinessKey())
-                .zipWith(getInstrument(recurrentTransaction.getSecondInstrumentBusinessKey()), (i1, i2) -> evaluateRecurrentTransactionType(i1, i2, recurrentTransaction))
+        return validateInstruments(recurrentTransaction)
                 .flatMap(this::validateFrequency)
                 .flatMap(this::validateNextTransactionDate)
                 .flatMap(this::validateRecurrentTransactionId)
                 .flatMap(this::recurrentTransactionApproved);
+    }
+
+    private Mono<RecurrentTransaction> validateInstruments(RecurrentTransaction recurrentTransaction) {
+        if(recurrentTransaction.getTransactionType()==null) {
+            return Mono.error(new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "no recurrenttransactiontype"));
+        }
+        if(recurrentTransaction.getTransactionType().equals(TransactionType.INCOME)
+            || recurrentTransaction.getTransactionType().equals(TransactionType.EXPENSE)){
+            return getInstrument(recurrentTransaction.getAccKey())
+                .flatMap(accInstrument->validateCashInstrument(accInstrument))
+                .flatMap(accInstrument->getInstrument(recurrentTransaction.getBudgetKey()))
+                .flatMap(budgetInstrument->validateBudgetInstrument(budgetInstrument))
+                .flatMap(budgetInstrument-> Mono.just(recurrentTransaction));
+        }
+        if(recurrentTransaction.getTransactionType().equals(TransactionType.TRANSFER)){
+            return getInstrument(recurrentTransaction.getAccKey())
+                .flatMap(accInstrument->validateCashInstrument(accInstrument))
+                .flatMap(accInstrument->getInstrument(recurrentTransaction.getTrgAccKey()))
+                .flatMap(trgAccInstrument->validateCashInstrument(trgAccInstrument))
+                .flatMap(trgAccInstrument-> Mono.just(recurrentTransaction));
+        }
+        if(recurrentTransaction.getTransactionType().equals(TransactionType.BUDGETTRANSFER)){
+            return getInstrument(recurrentTransaction.getTrgBudgetKey())
+                .flatMap(trgBudgetInstrument->validateBudgetInstrument(trgBudgetInstrument))
+                .flatMap(trgBudgetInstrument->getInstrument(recurrentTransaction.getBudgetKey()))
+                .flatMap(budgetInstrument->validateBudgetInstrument(budgetInstrument))
+                .flatMap(budgetInstrument-> Mono.just(recurrentTransaction));
+        }
+        if(recurrentTransaction.getTransactionType().equals(TransactionType.LIFEINSURANCEEXPENSE)){
+            return getInstrument(recurrentTransaction.getAccKey())
+                .flatMap(accInstrument->validateCashInstrument(accInstrument))
+                .flatMap(accInstrument->getInstrument(recurrentTransaction.getBudgetKey()))
+                .flatMap(budgetInstrument->validateBudgetInstrument(budgetInstrument))
+                .flatMap(budgetInstrument->getInstrument(recurrentTransaction.getInsuranceKey()))
+                .flatMap(lifeinsurance->validateLifeInsuranceInstrument(lifeinsurance))
+                .flatMap(lifeinsurance-> Mono.just(recurrentTransaction));
+        }
+        return Mono.error(new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "wrong recurrenttransactiontype"));
     }
 
     private Mono<String> recurrentTransactionApproved(RecurrentTransaction recurrentTransaction) {
@@ -106,7 +141,35 @@ public class RecurrentTransactionHandler {
 
     private Mono<Instrument> getInstrument(String instrumentId) {
         return dataReader.findByBusinesskey(instrumentId)
-                .switchIfEmpty(handleNotExistingInstrument(instrumentId));
+                .switchIfEmpty(handleNotExistingInstrument());
+    }
+
+    private Mono<Instrument> handleNotExistingInstrument(){
+        return Mono.error(new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "Not all necessary instruments available for this transaction:"));
+    }
+
+    private Mono<Instrument> validateCashInstrument(Instrument instrument){
+        if(!instrument.getInstrumentType().equals(InstrumentType.GIRO)
+            && !instrument.getInstrumentType().equals(InstrumentType.BUILDINGSAVINGACCOUNT)
+            && !instrument.getInstrumentType().equals(InstrumentType.LOAN)
+            && !instrument.getInstrumentType().equals(InstrumentType.MONEYATCALL)){
+            throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttype for "+this.getClass().getName());
+        }
+        return Mono.just(instrument);
+    }
+
+    private Mono<Instrument> validateBudgetInstrument(Instrument instrument){
+        if(!instrument.getInstrumentType().equals(InstrumentType.BUDGET)){
+            throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttype for "+this.getClass().getName());
+        }
+        return Mono.just(instrument);
+    }
+
+    private Mono<Instrument> validateLifeInsuranceInstrument(Instrument instrument){
+        if(!instrument.getInstrumentType().equals(InstrumentType.LIFEINSURANCE)){
+            throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttype for "+this.getClass().getName());
+        }
+        return Mono.just(instrument);
     }
 
     private Mono<RecurrentTransaction> validateFrequency(RecurrentTransaction recurrentTransaction){
@@ -117,9 +180,6 @@ public class RecurrentTransactionHandler {
     }
 
     private Mono<RecurrentTransaction> validateNextTransactionDate(RecurrentTransaction recurrentTransaction){
-        /*if(!recurrentTransaction.getNextTransactionDate().isAfter(LocalDate.now())) {
-            return auditService.handleMonoError("nextTransactionDate is in the past", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
-        }*/
         if(recurrentTransaction.getNextTransactionDate()==null) {
             return auditService.handleMonoError("nextTransactionDate is in set", AUDIT_MSG_TYPE, MFMsgKey.NO_VALID_RECURRENTTRANSACTION).cast(RecurrentTransaction.class);
         }
@@ -131,47 +191,6 @@ public class RecurrentTransactionHandler {
             recurrentTransaction.setRecurrentTransactionId(null);
         }
         return Mono.just(recurrentTransaction);
-    }
-
-    private Mono<Instrument> handleNotExistingInstrument(String businesskey){
-        String errorMsg = ERROR_MSG+ " Instrument for businesskey:" +businesskey + " does not exists.";
-        return auditService.handleMonoError(errorMsg, AUDIT_MSG_TYPE, MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION).cast(Instrument.class);
-    }
-
-    protected RecurrentTransaction evaluateRecurrentTransactionType(Instrument firstInstrument, Instrument secondInstrument, RecurrentTransaction recurrentTransaction) {
-        final String NO_VALID_INSTRUMENTTYPE_MSG = "no valid instrumenttype:";
-        if(firstInstrument.getInstrumentType() == InstrumentType.BUDGET) {
-            if(secondInstrument.getInstrumentType() == InstrumentType.BUDGET) {
-                recurrentTransaction.setTransactionType(TransactionType.BUDGETTRANSFER);
-            } else if( secondInstrument.getInstrumentType().getTypeGroup() == InstrumentTypeGroup.CASHACCOUNT ) {
-                recurrentTransaction.setTransactionType(getRecurrentTransactiontype(recurrentTransaction.getValue()));
-            } else {
-                auditService.throwException(NO_VALID_INSTRUMENTTYPE_MSG + secondInstrument.getInstrumentType() , AUDIT_MSG_TYPE, MFMsgKey.WRONG_INSTRUMENTTYPE_EXCEPTION);
-            }
-        } else if(firstInstrument.getInstrumentType().getTypeGroup() == InstrumentTypeGroup.CASHACCOUNT){
-            if(secondInstrument.getInstrumentType() == InstrumentType.BUDGET) {
-                if(firstInstrument.getInstrumentType()==InstrumentType.GIRO) {
-                    recurrentTransaction.setTransactionType(getRecurrentTransactiontype(recurrentTransaction.getValue()));
-                } else {
-                    auditService.throwException(NO_VALID_INSTRUMENTTYPE_MSG + " IncomeExpense is only allowed for GIRO-Accounts:" + secondInstrument.getInstrumentType() , AUDIT_MSG_TYPE, MFMsgKey.WRONG_INSTRUMENTTYPE_EXCEPTION);
-                }
-            } else if(secondInstrument.getInstrumentType().getTypeGroup() == InstrumentTypeGroup.CASHACCOUNT) {
-                recurrentTransaction.setTransactionType(TransactionType.TRANSFER);
-            } else {
-                auditService.throwException(NO_VALID_INSTRUMENTTYPE_MSG + secondInstrument.getInstrumentType() , AUDIT_MSG_TYPE, MFMsgKey.WRONG_INSTRUMENTTYPE_EXCEPTION);
-            }
-        } else {
-            auditService.throwException(NO_VALID_INSTRUMENTTYPE_MSG + firstInstrument.getInstrumentType() , AUDIT_MSG_TYPE, MFMsgKey.WRONG_INSTRUMENTTYPE_EXCEPTION);
-        }
-        return recurrentTransaction;
-    }
-
-    private TransactionType getRecurrentTransactiontype(double value) {
-        if(value <0) {
-            return TransactionType.EXPENSE;
-        } else {
-            return TransactionType.INCOME;
-        }
     }
 
     public Flux<RecurrentTransaction> listRecurrentTransactions() {

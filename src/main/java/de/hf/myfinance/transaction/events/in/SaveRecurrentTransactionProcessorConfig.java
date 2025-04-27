@@ -47,8 +47,11 @@ public class SaveRecurrentTransactionProcessorConfig {
                             .map(e -> {
                                     e.setNextTransactionDate(recurrentTransactionEntity.getNextTransactionDate());
                                     e.setTransactionType(recurrentTransactionEntity.getTransactionType());
-                                    e.setFirstInstrumentBusinessKey(recurrentTransactionEntity.getFirstInstrumentBusinessKey());
-                                    e.setSecondInstrumentBusinessKey(recurrentTransactionEntity.getSecondInstrumentBusinessKey());
+                                    e.setAccKey(recurrentTransactionEntity.getAccKey());
+                                    e.setBudgetKey(recurrentTransactionEntity.getBudgetKey());
+                                    e.setInsuranceKey(recurrentTransactionEntity.getInsuranceKey());
+                                    e.setTrgAccKey(recurrentTransactionEntity.getTrgAccKey());
+                                    e.setTrgBudgetKey(recurrentTransactionEntity.getTrgBudgetKey());
                                     e.setValue(recurrentTransactionEntity.getValue());
                                     e.setRecurrentFrequency(recurrentTransactionEntity.getRecurrentFrequency());
                                     return e;

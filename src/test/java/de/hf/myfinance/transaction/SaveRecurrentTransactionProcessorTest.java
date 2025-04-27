@@ -26,8 +26,8 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 
@@ -42,8 +42,8 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         assertEquals(TransactionType.INCOME, savedRecurrentTransactions.getTransactionType());
         assertEquals(nextTransactiondate, savedRecurrentTransactions.getNextTransactionDate());
         assertEquals(RecurrentFrequency.MONTHLY, savedRecurrentTransactions.getRecurrentFrequency());
-        assertEquals(giroKey, savedRecurrentTransactions.getFirstInstrumentBusinessKey());
-        assertEquals(bgtKey, savedRecurrentTransactions.getSecondInstrumentBusinessKey());
+        assertEquals(giroKey, savedRecurrentTransactions.getAccKey());
+        assertEquals(bgtKey, savedRecurrentTransactions.getBudgetKey());
         assertEquals(100, savedRecurrentTransactions.getValue());
     }
 
@@ -56,8 +56,8 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 
@@ -80,8 +80,8 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         assertEquals(TransactionType.INCOME, savedRecurrentTransactions.getTransactionType());
         assertEquals(nextTransactiondate, savedRecurrentTransactions.getNextTransactionDate());
         assertEquals(RecurrentFrequency.MONTHLY, savedRecurrentTransactions.getRecurrentFrequency());
-        assertEquals(giroKey, savedRecurrentTransactions.getFirstInstrumentBusinessKey());
-        assertEquals(bgtKey, savedRecurrentTransactions.getSecondInstrumentBusinessKey());
+        assertEquals(giroKey, savedRecurrentTransactions.getAccKey());
+        assertEquals(bgtKey, savedRecurrentTransactions.getBudgetKey());
         assertEquals(200, savedRecurrentTransactions.getValue());
     }
 
@@ -94,8 +94,8 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 
@@ -139,8 +139,8 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         var recurrentTransaction = new RecurrentTransaction();
         recurrentTransaction.setRecurrentFrequency(RecurrentFrequency.MONTHLY);
         recurrentTransaction.setNextTransactionDate(nextTransactiondate);
-        recurrentTransaction.setFirstInstrumentBusinessKey(giroKey);
-        recurrentTransaction.setSecondInstrumentBusinessKey(bgtKey);
+        recurrentTransaction.setAccKey(giroKey);
+        recurrentTransaction.setBudgetKey(bgtKey);
         recurrentTransaction.setTransactionType(TransactionType.INCOME);
         recurrentTransaction.setValue(100);
 

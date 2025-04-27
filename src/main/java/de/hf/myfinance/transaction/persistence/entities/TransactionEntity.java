@@ -1,6 +1,5 @@
 package de.hf.myfinance.transaction.persistence.entities;
 
-import de.hf.myfinance.restmodel.Trade;
 import de.hf.myfinance.restmodel.TransactionType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
@@ -8,8 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @Document(collection = "transactions")
 public class TransactionEntity  implements java.io.Serializable {
@@ -23,9 +20,19 @@ public class TransactionEntity  implements java.io.Serializable {
     private String description;
     private LocalDate transactiondate;
     private LocalDateTime lastchanged;
-    private Trade tradeInfo;
-    private Map<String, Double> cashflows = new HashMap<>(0);
     private TransactionType transactionType;
+
+    private double value;
+    private String budgetKey;
+    private String trgBudgetKey;
+    private String accKey;
+    private String trgAccKey;
+
+    private String depotBusinessKey;
+    private String securityBusinessKey;
+    private Double amount;
+
+    private String insuranceKey; 
 
     public TransactionEntity(){}
 
@@ -77,22 +84,6 @@ public class TransactionEntity  implements java.io.Serializable {
         this.lastchanged = lastchanged;
     }
 
-    public Trade getTradeInfo() {
-        return tradeInfo;
-    }
-
-    public void setTradeInfo(Trade tradeInfo) {
-        this.tradeInfo = tradeInfo;
-    }
-
-    public Map<String, Double> getCashflows() {
-        return cashflows;
-    }
-
-    public void setCashflows(Map<String, Double> cashflows) {
-        this.cashflows = cashflows;
-    }
-
     public TransactionType getTransactionType() {
         return transactionType;
     }
@@ -100,4 +91,78 @@ public class TransactionEntity  implements java.io.Serializable {
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType;
     }
+
+
+    public double getValue() {
+        return this.value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public String getBudgetKey() {
+        return this.budgetKey;
+    }
+
+    public void setBudgetKey(String budgetKey) {
+        this.budgetKey = budgetKey;
+    }
+
+    public String getTrgBudgetKey() {
+        return this.trgBudgetKey;
+    }
+
+    public void setTrgBudgetKey(String trgBudgetKey) {
+        this.trgBudgetKey = trgBudgetKey;
+    }
+
+    public String getAccKey() {
+        return this.accKey;
+    }
+
+    public void setAccKey(String accKey) {
+        this.accKey = accKey;
+    }
+
+    public String getTrgAccKey() {
+        return this.trgAccKey;
+    }
+
+    public void setTrgAccKey(String trgAccKey) {
+        this.trgAccKey = trgAccKey;
+    }
+
+    public String getDepotBusinessKey() {
+        return this.depotBusinessKey;
+    }
+
+    public void setDepotBusinessKey(String depotBusinessKey) {
+        this.depotBusinessKey = depotBusinessKey;
+    }
+
+    public String getSecurityBusinessKey() {
+        return this.securityBusinessKey;
+    }
+
+    public void setSecurityBusinessKey(String securityBusinessKey) {
+        this.securityBusinessKey = securityBusinessKey;
+    }
+
+    public Double getAmount() {
+        return this.amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getInsuranceKey() {
+        return this.insuranceKey;
+    }
+
+    public void setInsuranceKey(String insuranceKey) {
+        this.insuranceKey = insuranceKey;
+    }
+
 }

@@ -36,24 +36,7 @@ public class TransactionService {
         return transactionHandlerFactory.listTransactions(startDate, endDate);
     }
 
-    public Flux<Cashflow> listInstrumentCashflows(String businesskey, LocalDate startDate, LocalDate endDate) {
 
-        return transactionHandlerFactory.listTransactions(startDate, endDate)
-            .flatMap(i->this.filterTransactionsAndConvert2Cashflows(businesskey,i)).filter(c->c.getValue()!=0);
-
-    }
-
-    private Mono<Cashflow> filterTransactionsAndConvert2Cashflows(String businesskey, Transaction transactions){
-        var cashflow = new Cashflow();
-        cashflow.setValue(0);
-        if(transactions.getCashflows().containsKey(businesskey)){
-            cashflow.setDescription(transactions.getDescription());
-            cashflow.setInstrumentBusinesskey(businesskey);
-            cashflow.setTransactiondate(transactions.getTransactiondate());
-            cashflow.setValue(transactions.getCashflows().get(businesskey));
-        }
-        return Mono.just(cashflow);
-    }
 
     public Mono<Transaction> getTransaction(String transactionId) {
         return transactionHandlerFactory.getTransaction(transactionId);
@@ -67,12 +50,5 @@ public class TransactionService {
         return recurrentTransactionHandler.process();
     }
 
-    public Mono<Double> getAvgExpensesOfLastYear(String businesskey){
-        LocalDate today = LocalDate.now();
-        // Get the previous month
-        YearMonth lastMonth = YearMonth.from(today).minusMonths(1);
-        // Get the last day of the last month
-        LocalDate lastDayOfLastMonth = lastMonth.atEndOfMonth();
-        return listInstrumentCashflows(businesskey, lastDayOfLastMonth.minusYears(1), lastDayOfLastMonth).filter(c->c.getValue()<0).map(Cashflow::getValue).reduce(0.0,Double::sum).map(s->s/12);
-    }
+
 }

@@ -4,8 +4,10 @@ import de.hf.framework.audit.Severity;
 import de.hf.framework.exceptions.MFException;
 import de.hf.myfinance.exception.MFMsgKey;
 import de.hf.myfinance.restmodel.Instrument;
+import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -27,7 +29,8 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         validateTransactionDate(transaction.getTransactiondate());
         validateTransactionDesc(transaction.getDescription());
         return validateTransactionId(transaction)
-            .flatMap(this::validateCashflows)
+            .flatMap(this::validateInstruments)
+            .flatMap(this::validateValue)
             .flatMap(this::additionalValidation)
             .flatMap(this::saveTransaction);
     }
@@ -36,14 +39,16 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         return Mono.just(transaction);
     }
 
-    protected Mono<Transaction> validateCashflows(Transaction transaction){
-        var cashflows = transaction.getCashflows();
-        validateCashflowNumber(cashflows);
-        validateCashflowValue(cashflows);
-        return this.transactionEnvironment.getDataReader().findInstrumentByBusinesskeyIn(cashflows.keySet())
-                .collectList().flatMap(this::validateInstruments)
-                .flatMap(i->Mono.just(transaction));
+    protected Mono<Transaction> validateValue(Transaction transaction){
+        if(transaction.getValue()==0) {
+            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, "value = 0 not allowed");
+        }
+        if(transaction.getValue()<0) {
+            transaction.setValue(transaction.getValue()*(-1));
+        }
+        return Mono.just(transaction);
     }
+    protected abstract Mono<Transaction> validateInstruments(Transaction transaction);
 
     protected void validateTransactionDate(LocalDate transactiondate) {
         if(transactiondate.isAfter(LocalDate.now()) || transactiondate.isBefore(LocalDate.of(2000,1,1))) {
@@ -57,22 +62,32 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         }
     }
 
-    protected Mono<String> validateInstruments(List<Instrument> instruments){
-        validateInstrumentNumber(instruments);
-        validateTenant(instruments);
-        validateInstrumentTypes(instruments);
-        validateInstrumentStatus(instruments);
-        return Mono.just("valid Transaction");
+    protected Mono<String> validateInstrumentTypes(Map<String, List<InstrumentType>> instrumentKeyTypeMap){
+        return Flux.fromIterable(instrumentKeyTypeMap.entrySet())
+            .flatMap(entry -> validateInstrument(entry.getKey(), entry.getValue()))
+            .collectList()
+            .flatMap(this::validateTenant);
     }
 
-    protected abstract void validateInstrumentTypes(List<Instrument> instruments);
+    protected Mono<Instrument> validateInstrument(String instrumentKey, List<InstrumentType> instrumentTypes){
 
-    protected void validateInstrumentStatus(List<Instrument> instruments){
-        instruments.forEach(i->{
-            if(!i.isActive()){
-                throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, "No new Transactions allowd for inactive instruments:"+ i);
-            }
-        });
+       return this.transactionEnvironment.getDataReader().findByBusinesskey(instrumentKey)
+            .switchIfEmpty(handleNotExistingInstrument())
+            .flatMap(i->validateInstrumentType(i, instrumentTypes))
+            .flatMap(this::validateIsActive);
+    }
+
+    private Mono<Instrument> validateInstrumentType(Instrument instrument, List<InstrumentType> instrumentTypes){
+        if(!instrumentTypes.contains(instrument.getInstrumentType())){
+            throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttype for "+this.getClass().getName());
+        }
+        return Mono.just(instrument);
+    }
+    private Mono<Instrument> validateIsActive(Instrument instrument){
+        if(!instrument.isActive()){
+            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, "No new Transactions allowd for inactive instruments:"+ instrument.getDescription());
+        }
+        return Mono.just(instrument);
     }
     
     protected Mono<Transaction> saveTransaction(Transaction transaction) {
@@ -84,19 +99,6 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         transactionEnvironment.getAuditService().saveMessage(transaction+" inserted: " + transaction, Severity.INFO, AUDIT_MSG_TYPE);
         transactionEnvironment.getEventHandler().sendTransactionApprovedEvent(transaction);
         return Mono.just(transaction);
-    }
-
-    protected void validateCashflowNumber(Map<String, Double> cashflows) {
-        if(cashflows ==null || cashflows.isEmpty() || cashflows.size()!=2) {
-            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " no valid cashflows:"+ cashflows);
-        }
-    }
-
-    protected void validateCashflowValue(Map<String, Double> cashflows) {
-        var values = cashflows.values().stream().toList();
-        if(!values.get(0).equals(values.get(1)*(-1))) {
-            throw new MFException(MFMsgKey.NO_VALID_TRANSACTION, " value of cashflows not equal:"+ cashflows);
-        }
     }
 
     protected Mono<Transaction> validateTransactionId(Transaction transaction){
@@ -114,10 +116,8 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
         return Mono.error(new MFException(MFMsgKey.UNKNOWN_TRANSACTION_EXCEPTION, "No transaction for this transactionId available:"+transaction.getTransactionId()));
     }
 
-    protected void validateInstrumentNumber(List<Instrument> instruments) {
-        if(instruments.size()!=2){
-            throw new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "Not all Instruments for this transaction available.");
-        }
+    private Mono<Instrument> handleNotExistingInstrument(){
+        return Mono.error(new MFException(MFMsgKey.UNKNOWN_INSTRUMENT_EXCEPTION, "Not all necessary instruments available for this transaction:"+transaction.getTransactionId()));
     }
 
     protected Mono<String> validateTenant(List<Instrument> instruments) {

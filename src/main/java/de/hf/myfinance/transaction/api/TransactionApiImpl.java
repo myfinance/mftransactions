@@ -112,14 +112,4 @@ public class TransactionApiImpl implements TransactionApi {
         streamBridge.send(bindingName, message);
     }
 
-    @Override
-    public Mono<Double> getAvgExpensesOfLastYear(String businesskey) {
-        return transactionService.getAvgExpensesOfLastYear(businesskey);
-    }
-
-    @Override
-    public Flux<Cashflow> listCashflows4Instrument(String businesskey, LocalDate startDate, LocalDate endDate) {
-        return transactionService.listInstrumentCashflows(businesskey, startDate, endDate);
-    }
-
 }

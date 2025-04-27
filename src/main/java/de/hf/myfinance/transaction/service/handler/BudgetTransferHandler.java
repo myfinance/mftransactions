@@ -1,12 +1,13 @@
 package de.hf.myfinance.transaction.service.handler;
 
-import de.hf.framework.exceptions.MFException;
-import de.hf.myfinance.exception.MFMsgKey;
-import de.hf.myfinance.restmodel.Instrument;
+
 import de.hf.myfinance.restmodel.InstrumentType;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.TransactionEnvironment;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class BudgetTransferHandler extends AbsTransactionHandler{
@@ -16,11 +17,15 @@ public class BudgetTransferHandler extends AbsTransactionHandler{
     }
 
     @Override
-    protected void validateInstrumentTypes(List<Instrument> instruments) {
-        instruments.forEach(i->{
-            if(!i.getInstrumentType().equals(InstrumentType.BUDGET)) {
-                throw new MFException(MFMsgKey.NO_VALID_INSTRUMENT, "Wrong instrumenttype for budgetTransfer:"+i);
-            }
-        });
+    protected Mono<Transaction> validateInstruments(Transaction transaction){
+        var instrumentKeyTypeMap = new HashMap<String, List<InstrumentType>>();
+
+        var validBudgetType = new ArrayList<InstrumentType>();
+        validBudgetType.add(InstrumentType.BUDGET);
+        instrumentKeyTypeMap.put(transaction.getBudgetKey(), validBudgetType);
+        instrumentKeyTypeMap.put(transaction.getTrgBudgetKey(), validBudgetType);
+
+        return validateInstrumentTypes(instrumentKeyTypeMap)
+            .flatMap(s->Mono.just(transaction));
     }
 }
