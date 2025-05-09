@@ -1,6 +1,5 @@
 package de.hf.myfinance.transaction.service;
 
-import de.hf.myfinance.restmodel.Cashflow;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.handler.RecurrentTransactionHandler;
@@ -10,7 +9,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 
 @Component
 public class TransactionService {
