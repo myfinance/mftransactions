@@ -106,7 +106,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         var savedRecurrentTransactions = recurrentTransactions.get(0);
         recurrentTransaction.setRecurrentTransactionId(savedRecurrentTransactions.getRecurrentTransactionId());
 
-        creatEvent = new Event(Event.Type.DELETE, recurrentTransaction.hashCode(), recurrentTransaction);
+        creatEvent = new Event(Event.Type.DELETE, recurrentTransaction.getRecurrentTransactionId(), recurrentTransaction);
         saveRecurrentTransactionProcessor.accept(creatEvent);
 
         recurrentTransactions = recurrentTransactionRepository.findAll().collectList().block();
@@ -123,7 +123,7 @@ class SaveRecurrentTransactionProcessorTest extends EventProcessorTestBase {
         recurrentTransaction.setRecurrentTransactionId("bla");
 
 
-        Event creatEvent = new Event(Event.Type.DELETE, recurrentTransaction.hashCode(), recurrentTransaction);
+        Event creatEvent = new Event(Event.Type.DELETE, recurrentTransaction.getRecurrentTransactionId(), recurrentTransaction);
 
         assertThrows(MFException.class, () -> {
             saveRecurrentTransactionProcessor.accept(creatEvent);
