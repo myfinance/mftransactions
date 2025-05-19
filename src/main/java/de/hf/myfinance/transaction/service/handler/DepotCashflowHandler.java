@@ -29,6 +29,7 @@ public class DepotCashflowHandler extends IncomeExpensesHandler{
         validSecurityType.add(InstrumentType.EQUITY);
         validSecurityType.add(InstrumentType.FONDS);
         validSecurityType.add(InstrumentType.ETF);
+        validSecurityType.add(InstrumentType.KRYPTO);
         instrumentKeyTypeMap.put(transaction.getSecurityBusinessKey(), validSecurityType);
         return instrumentKeyTypeMap;
     }
