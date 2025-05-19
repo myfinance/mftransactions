@@ -54,6 +54,7 @@ public class SaveInstrumentProcessorConfig {
                         || instrument.getInstrumentType().equals(InstrumentType.BUILDINGSAVINGACCOUNT)
                         || instrument.getInstrumentType().equals(InstrumentType.DEPOT)
                         || instrument.getInstrumentType().equals(InstrumentType.LOAN)
+                        || instrument.getInstrumentType().equals(InstrumentType.LIFEINSURANCE)
                         || instrument.getInstrumentType().getTypeGroup().equals(InstrumentTypeGroup.SECURITY)){
                         var instrumentEntity = map2entity(instrument);
                         instrumentRepository.deleteByBusinesskey(instrumentEntity.getBusinesskey()).then(instrumentRepository.save(instrumentEntity)).block();
