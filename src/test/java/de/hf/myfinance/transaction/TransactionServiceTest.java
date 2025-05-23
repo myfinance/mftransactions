@@ -317,44 +317,55 @@ class TransactionServiceTest extends EventProcessorTestBase{
 
         var id = transactionRepository.findAll().collectList().block().get(0).getTransactionId();
 
-        var updatedTransaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
-        updatedTransaction.setAccKey(giroKey);
-        updatedTransaction.setBudgetKey(bgtKey);
+        LocalDate transactionDate2 = LocalDate.of(2022, 1, 2);
+        var desc2 = "testeinkommen2";
+        var updatedTransaction = new Transaction(desc2, transactionDate2, TransactionType.INCOME);
+        updatedTransaction.setAccKey(giro2Key);
+        updatedTransaction.setBudgetKey(bgt2Key);
         updatedTransaction.setValue(200.0);
         updatedTransaction.setTransactionId(id);
         transactionService.validateTransaction(updatedTransaction).block();
+
+        var expectedOldTransactionTransaction = new Transaction(desc, transactionDate, TransactionType.INCOME);
+        expectedOldTransactionTransaction.setAccKey(giroKey);
+        expectedOldTransactionTransaction.setBudgetKey(bgtKey);
+        expectedOldTransactionTransaction.setValue(100.0);
+        expectedOldTransactionTransaction.setTransactionId(id);
 
         final List<String> messages2 = getMessages(transactionApprovedBindingName);
         assertEquals(2, messages2.size());
 
         var eventTypes = new ArrayList<String>();
-        // i have to set the id again because it was set to null to create a new id for the insert but I want to compare it with the expected
-        updatedTransaction.setTransactionId(id);
-        eventTypes.add(validateUpdateEvents(updatedTransaction, messages2.get(0)));
-        eventTypes.add(validateUpdateEvents(updatedTransaction, messages2.get(1)));
+        
+        eventTypes.add(validateUpdateEvents(expectedOldTransactionTransaction, updatedTransaction, messages2.get(0)));
+        eventTypes.add(validateUpdateEvents(expectedOldTransactionTransaction, updatedTransaction, messages2.get(1)));
         assertTrue(eventTypes.contains("CREATE"));
         assertTrue(eventTypes.contains("DELETE"));
     }
 
-    private String validateUpdateEvents(Transaction expectedTransaction, String msg) {
+    private String validateUpdateEvents(Transaction oldTransaction, Transaction newTransaction, String msg) {
         JsonHelper jsonHelper = new JsonHelper();
         var eventType = (String)jsonHelper.convertJsonStringToMap(msg).get("eventType");
         assertTrue(eventType.equals("CREATE")||eventType.equals("DELETE"));
         var data = (LinkedHashMap<String, Object>)jsonHelper.convertJsonStringToMap(msg).get("data");
 
-        assertEquals(expectedTransaction.getTransactiondate().toString(), data.get("transactiondate"));
-        assertEquals(expectedTransaction.getDescription(), data.get("description"));
-        assertEquals(expectedTransaction.getAccKey(), data.get("accKey"));
-        assertEquals(expectedTransaction.getBudgetKey(), data.get("budgetKey"));
-        assertEquals(expectedTransaction.getValue(), data.get("value"));
-        assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
-
         if(eventType.equals("CREATE")){
             assertNull(data.get("transactionId"));
+            assertEquals(newTransaction.getTransactiondate().toString(), data.get("transactiondate"));
+            assertEquals(newTransaction.getDescription(), data.get("description"));
+            assertEquals(newTransaction.getAccKey(), data.get("accKey"));
+            assertEquals(newTransaction.getBudgetKey(), data.get("budgetKey"));
+            assertEquals(newTransaction.getValue(), data.get("value"));
+            assertEquals(TransactionType.INCOME.toString(), data.get("transactionType"));
             return "CREATE";
         }
         if(eventType.equals("DELETE")){
-            assertEquals(expectedTransaction.getTransactionId(), data.get("transactionId"));
+            assertEquals(oldTransaction.getTransactionId(), data.get("transactionId"));
+            assertEquals(oldTransaction.getTransactiondate().toString(), data.get("transactiondate"));
+            assertEquals(oldTransaction.getDescription(), data.get("description"));
+            assertEquals(oldTransaction.getAccKey(), data.get("accKey"));
+            assertEquals(oldTransaction.getBudgetKey(), data.get("budgetKey"));
+            assertEquals(oldTransaction.getValue(), data.get("value"));
             return "DELETE";
         }
         return "wrong EventType";

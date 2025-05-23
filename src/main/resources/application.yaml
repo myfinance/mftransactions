@@ -45,27 +45,27 @@ spring.cloud.stream:
   bindings.transactionApproved-out-0:
     destination: transactionApproved
     producer:
-      required-groups: transactionApprovedAuditGroup
+      required-groups: saveTransactionGroup
   bindings.validateTransactionRequest-out-0:
     destination: validateTransactionRequest
     producer:
-      required-groups: validateTransactionRequestAuditGroup
+      required-groups: validateTransactionGroup
   bindings.validateRecurrentTransactionRequest-out-0:
     destination: validateRecurrentTransactionRequest
     producer:
-      required-groups: validateRecurrentTransactionRequestAuditGroup
+      required-groups: validateRecurrentTransactionGroup
   bindings.recurrentTransactionApproved-out-0:
     destination: recurrentTransactionApproved
     producer:
-      required-groups: recurrentTransactionApprovedAuditGroup
+      required-groups: saveRecurrentTransactionGroup
   bindings.processRecurrentTransactions-out-0:
     destination: processRecurrentTransactions
     producer:
-      required-groups: processRecurrentTransactionsAuditGroup
+      required-groups: processRecurrentTransactionsGroup
   bindings.mflog-out-0:
     destination: logStream
     producer:
-      required-groups: mflogauditGroup      
+      required-groups: logPublisherGroup      
 
 spring.cloud.stream.bindings.validateTransactionProcessor-in-0.consumer:
   maxAttempts: 1

@@ -28,10 +28,10 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
     public Mono<Transaction> validate() {
         validateTransactionDate(transaction.getTransactiondate());
         validateTransactionDesc(transaction.getDescription());
-        return validateTransactionId(transaction)
-            .flatMap(this::validateInstruments)
+        return validateInstruments(transaction)
             .flatMap(this::validateValue)
             .flatMap(this::additionalValidation)
+            .flatMap(this::handleOldTransaction)
             .flatMap(this::saveTransaction);
     }
 
@@ -91,23 +91,24 @@ public abstract class AbsTransactionHandler implements TransactionHandler {
     }
     
     protected Mono<Transaction> saveTransaction(Transaction transaction) {
-        if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()){
-            transactionEnvironment.getAuditService().saveMessage(transaction+" deleted: " + transaction, Severity.INFO, AUDIT_MSG_TYPE);
-            transactionEnvironment.getEventHandler().sendDeleteTransactionEvent(transaction);
-            transaction.setTransactionId(null);
-        }
         transactionEnvironment.getAuditService().saveMessage(transaction+" inserted: " + transaction, Severity.INFO, AUDIT_MSG_TYPE);
         transactionEnvironment.getEventHandler().sendTransactionApprovedEvent(transaction);
         return Mono.just(transaction);
     }
 
-    protected Mono<Transaction> validateTransactionId(Transaction transaction){
+    protected Mono<Transaction> handleOldTransaction(Transaction transaction){
         if(transaction.getTransactionId() != null && transaction.getTransactionId().trim().isEmpty()) {
             transaction.setTransactionId(null);
         }
         if(transaction.getTransactionId()!=null && !transaction.getTransactionId().isEmpty()) {
             return this.transactionEnvironment.getDataReader().findTransactionById(transaction.getTransactionId())
-                    .switchIfEmpty(handleNotExistingTransaction()).flatMap(i-> Mono.just(transaction));
+                    .switchIfEmpty(handleNotExistingTransaction())
+                    .flatMap(oldTransaction-> {
+                        transactionEnvironment.getAuditService().saveMessage(transaction+" deleted: " + oldTransaction, Severity.INFO, AUDIT_MSG_TYPE);
+                        transactionEnvironment.getEventHandler().sendDeleteTransactionEvent(oldTransaction);
+                        transaction.setTransactionId(null);
+                        return Mono.just(transaction);
+                    });
         }
         return Mono.just(transaction);
     }
