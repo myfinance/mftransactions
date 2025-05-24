@@ -30,6 +30,7 @@ public class IncomeExpensesHandler extends AbsTransactionHandler{
         validAccType.add(InstrumentType.BUILDINGSAVINGACCOUNT);
         validAccType.add(InstrumentType.LOAN);
         validAccType.add(InstrumentType.MONEYATCALL);
+        validAccType.add(InstrumentType.TIMEDEPOSIT);
         instrumentKeyTypeMap.put(transaction.getAccKey(), validAccType);
 
         var validBudgetType = new ArrayList<InstrumentType>();

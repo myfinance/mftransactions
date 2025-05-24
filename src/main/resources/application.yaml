@@ -67,15 +67,15 @@ spring.cloud.stream:
     producer:
       required-groups: logPublisherGroup      
 
-spring.cloud.stream.bindings.validateTransactionProcessor-in-0.consumer:
-  maxAttempts: 1
-  backOffInitialInterval: 500
-  backOffMaxInterval: 1000
-  backOffMultiplier: 2.0
+#spring.cloud.stream.bindings.validateTransactionProcessor-in-0.consumer:
+#  maxAttempts: 1
+#  backOffInitialInterval: 500
+#  backOffMaxInterval: 1000
+#  backOffMultiplier: 2.0
 
-spring.cloud.stream.rabbit.bindings.validateTransactionProcessor-in-0.consumer:
-  autoBindDlq: true
-  republishToDlq: true
+#spring.cloud.stream.rabbit.bindings.validateTransactionProcessor-in-0.consumer:
+#  autoBindDlq: true
+#  republishToDlq: true
 
 spring.rabbitmq:
   host: ${env.host}
