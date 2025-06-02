@@ -60,7 +60,7 @@ public class RecurrentTransactionHandler {
         switch(frequency) {
             case MONTHLY:
                 return lastTransaction.plusMonths(1);
-            case QUATERLY:
+            case QUARTERLY:
                 return lastTransaction.plusMonths(3);
             case YEARLY:
                 return lastTransaction.plusYears(1);

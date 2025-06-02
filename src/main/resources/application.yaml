@@ -6,7 +6,7 @@ env:
   host: 192.168.100.73
 logging:
   level:
-    root: INFO
+    root: ERROR
     de.hf.myfinance: DEBUG
 
 
