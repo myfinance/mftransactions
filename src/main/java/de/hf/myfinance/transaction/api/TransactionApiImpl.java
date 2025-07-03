@@ -2,11 +2,9 @@ package de.hf.myfinance.transaction.api;
 
 import de.hf.myfinance.event.Event;
 import de.hf.myfinance.restapi.TransactionApi;
-import de.hf.myfinance.restmodel.Cashflow;
 import de.hf.myfinance.restmodel.RecurrentTransaction;
 import de.hf.myfinance.restmodel.Transaction;
 import de.hf.myfinance.transaction.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
